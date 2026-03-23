@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa uderzeń - trzecia finałowa tercja</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #1f2937;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    p.description {
+      margin: 0 0 20px;
+      color: #4b5563;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 820px) 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      padding: 16px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      background: #2d8f45;
+      cursor: crosshair;
+    }
+
+    .filters-panel {
+      display: flex;
+      gap: 12px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .filter-field {
+      display: grid;
+      gap: 6px;
+      min-width: 220px;
+    }
+
+    .filter-field label {
+      font-size: 13px;
+      color: #4b5563;
+    }
+
+    .filter-field select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .shots-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .shots-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .counter {
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    .shot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 640px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .shot-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f9fafb;
+    }
+
+    .shot-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .shot-meta {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .shot-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .shot-field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .shot-field label {
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    .shot-field input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .shot-team {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .shot-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .shot-checkbox input {
+      width: auto;
+      margin: 0;
+      accent-color: #111827;
+    }
+
+    .shot-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .shot-actions select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .delete-shot-btn {
+      background: #b91c1c;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .delete-shot-btn:hover {
+      opacity: 0.95;
+    }
+
+    .empty {
+      padding: 16px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      color: #64748b;
+      background: #f8fafc;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Mapa uderzeń</h1>
+    <p class="description">Kliknij na boisku, aby zaznaczyć miejsce oddania uderzenia. Po prawej stronie zobaczysz listę zapisanych prób.</p>
+
+    <div class="layout">
+      <div class="card">
+        <div class="filters-panel">
+          <div class="filter-field">
+            <label for="teamFilter">Pokaż uderzenia</label>
+            <select id="teamFilter">
+              <option value="all">Wszystkie</option>
+              <option value="ourTeam">Nasz zespół</option>
+              <option value="opponent">Przeciwnik</option>
+            </select>
+          </div>
+        </div>
+        <canvas id="pitchCanvas" width="800" height="470"></canvas>
+        <div class="toolbar">
+          <div class="hint">Widok: pełna trzecia finałowa tercja w proporcji 68 m × 35 m, z bramką u góry.</div>
+          <div class="toolbar-actions">
+            <button id="exportBtn" type="button">Eksportuj CSV</button>
+            <button id="clearBtn" type="button">Wyczyść wszystkie uderzenia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="shots-header">
+          <h2>Lista uderzeń</h2>
+          <div class="counter" id="counter">0</div>
+        </div>
+        <div id="shotList" class="shot-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
