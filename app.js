@@ -444,6 +444,7 @@ function exportShotsToCsv() {
     'passerNumber',
     'xg',
     'videoFragment',
+    'videoFragmentsCount',
     'team'
   ];
 
@@ -471,6 +472,7 @@ function exportShotsToCsv() {
       shot.passerNumber,
       shot.xg,
       shot.videoFragment,
+      videoFragmentsCount.value,
       shot.team,
     ];
 
@@ -759,6 +761,7 @@ function importFromCsv(text) {
   if (firstRow.opponent) opponentNameInput.value = firstRow.opponent;
   if (firstRow.matchDate) matchDateInput.value = firstRow.matchDate;
   if (firstRow.venue) venueSelect.value = firstRow.venue;
+  if (firstRow.videoFragmentsCount) videoFragmentsCount.value = Math.max(1, parseInt(firstRow.videoFragmentsCount) || 1);
   validateStart();
   mainLayout.style.display = '';
   startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
