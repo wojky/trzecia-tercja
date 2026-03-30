@@ -386,6 +386,326 @@
         margin-bottom: 20px;
       }
 
+      .players-table-wrap {
+        overflow-x: auto;
+        margin-top: 8px;
+      }
+
+      .players-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        font-family: Arial, sans-serif;
+      }
+
+      .players-table th {
+        text-align: left;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        color: #374151;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e5e7eb;
+        white-space: nowrap;
+      }
+
+      .players-table th.num,
+      .players-table td.num {
+        text-align: center;
+      }
+
+      .players-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #111827;
+        white-space: nowrap;
+      }
+
+      .players-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .players-table tr:hover td {
+        background: #f8fafc;
+      }
+
+      .players-table td.muted {
+        color: #9ca3af;
+      }
+
+      .players-table td.num-badge {
+        text-align: center;
+      }
+
+      .player-num-badge {
+        display: inline-block;
+        background: #e11d48;
+        color: #fff;
+        font-weight: 700;
+        font-size: 12px;
+        border-radius: 6px;
+        padding: 1px 7px;
+        min-width: 24px;
+        text-align: center;
+      }
+
+      /* ── Player dialog ─────────────────────────────────────────────── */
+      #playerDialog {
+        border: none;
+        border-radius: 14px;
+        padding: 0;
+        width: min(540px, 96vw);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        background: #fff;
+      }
+
+      #playerDialog::backdrop {
+        background: rgba(0, 0, 0, 0.45);
+      }
+
+      .player-dialog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px 12px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .player-dialog-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .player-dialog-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        line-height: 1;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0 4px;
+      }
+
+      .player-dialog-close:hover {
+        color: #111827;
+      }
+
+      .player-dialog-body {
+        padding: 16px 20px 20px;
+        font-size: 13px;
+        font-family: Arial, sans-serif;
+      }
+
+      .pdg-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6b7280;
+        margin: 14px 0 6px;
+      }
+
+      .pdg-section-title:first-child {
+        margin-top: 0;
+      }
+
+      .pdg-kv-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .pdg-kv {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .pdg-kv-label {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #6b7280;
+      }
+
+      .pdg-kv-value {
+        font-size: 20px;
+        font-weight: 800;
+        color: #111827;
+        line-height: 1.1;
+      }
+
+      .pdg-kv-value.accent {
+        color: #e11d48;
+      }
+
+      .pdg-shot-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+
+      .pdg-shot-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 12px;
+        color: #374151;
+      }
+
+      .pdg-shot-min {
+        font-weight: 700;
+        min-width: 30px;
+        color: #6b7280;
+      }
+
+      .pdg-shot-xg {
+        font-weight: 700;
+        color: #e11d48;
+        min-width: 40px;
+      }
+
+      .pdg-shot-status {
+        color: #6b7280;
+      }
+
+      .btn-player-details {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #9ca3af;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 1;
+        transition: color 0.15s;
+      }
+
+      .btn-player-details:hover {
+        color: #e11d48;
+      }
+
+      .pdg-info-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #9ca3af;
+        padding: 0 0 0 3px;
+        font-size: 10px;
+        line-height: 1;
+        vertical-align: middle;
+      }
+
+      .pdg-info-btn:hover {
+        color: #374151;
+      }
+
+      .pdg-popover {
+        position: fixed;
+        max-width: 280px;
+        background: #1f2937;
+        color: #f9fafb;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+        line-height: 1.5;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 14px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        pointer-events: none;
+      }
+
+      .collab-table {
+        border-collapse: collapse;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+      }
+
+      .collab-table th,
+      .collab-table td {
+        width: 42px;
+        height: 36px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+      }
+
+      .collab-table th {
+        background: #f1f5f9;
+        color: #374151;
+        font-weight: 700;
+        font-size: 11px;
+        padding: 4px 6px;
+      }
+
+      .collab-table td {
+        color: #111827;
+      }
+
+      .collab-table td.collab-self {
+        background: #f1f5f9;
+      }
+
+      .collab-table td.collab-zero {
+        color: #d1d5db;
+      }
+
+      .collab-table td.collab-val {
+        font-weight: 700;
+        background: rgba(225, 29, 72, 0.08);
+        color: #e11d48;
+      }
+
+      .collab-mode-toggle {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+
+      .collab-mode-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        background: #f1f5f9;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #374151;
+        user-select: none;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+
+      .collab-mode-label:has(input:checked) {
+        background: #e11d48;
+        border-color: #e11d48;
+        color: #fff;
+      }
+
+      .collab-mode-label input {
+        display: none;
+      }
+
       .filters-panel {
         display: flex;
         gap: 12px;
@@ -729,6 +1049,9 @@
             <button class="card-tab" id="tabStats" type="button">
               <i class="bi bi-bar-chart-line"></i> Statystyki
             </button>
+            <button class="card-tab" id="tabPlayers" type="button">
+              <i class="bi bi-people"></i> Zawodnicy
+            </button>
             <button class="card-tab" id="tabSim" type="button">
               <i class="bi bi-lightning-charge"></i> Symulacja
             </button>
@@ -844,6 +1167,95 @@
             <canvas id="xgTimelineChart" style="max-height: 260px"></canvas>
           </div>
 
+          <div id="playersPanel" class="stats-panel">
+            <div class="players-table-wrap">
+              <table class="players-table" id="playersTable">
+                <thead>
+                  <tr>
+                    <th>Zawodnik</th>
+                    <th class="num">Nr</th>
+                    <th class="num" style="text-transform: none">xG</th>
+                    <th class="num" style="text-transform: none">xA</th>
+                    <th class="num">Cel.</th>
+                    <th class="num">Niecel.</th>
+                    <th class="num">Zablok.</th>
+                    <th class="num">Czas gry</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="playersTableBody"></tbody>
+              </table>
+            </div>
+            <div id="collabSection" style="display: none; margin-top: 28px">
+              <div class="stats-chart-title">Współpraca zawodników</div>
+              <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
+                Liczba na przecięciu wiersza i kolumny oznacza łączną liczbę
+                akcji, w których zawodnik z wiersza i zawodnik z kolumny brali
+                udział razem (strzał ↔ asysta, w dowolnym kierunku).
+                <span
+                  style="
+                    display: inline-block;
+                    background: rgba(225, 29, 72, 0.08);
+                    color: #e11d48;
+                    font-weight: 700;
+                    border-radius: 4px;
+                    padding: 0 6px;
+                    margin: 0 2px;
+                  "
+                  >N</span
+                >
+                = N wspólnych akcji &nbsp;·&nbsp;
+                <span style="color: #d1d5db; font-weight: 700">·</span> = brak
+                współpracy <br /><strong
+                  >Kierunek odczytu: wiersz → kolumna</strong
+                >
+                (np. wiersz 9, kolumna 7 = nr 9 działał w kierunku nr 7)
+              </p>
+              <div class="collab-mode-toggle">
+                <label class="collab-mode-label">
+                  <input
+                    type="radio"
+                    name="collabMode"
+                    value="ps"
+                    onchange="
+                      document.getElementById('collabMatrix').innerHTML =
+                        renderCollabMatrix(this.value)
+                    "
+                  />
+                  asysta → uderzenie
+                </label>
+                <label class="collab-mode-label">
+                  <input
+                    type="radio"
+                    name="collabMode"
+                    value="sp"
+                    onchange="
+                      document.getElementById('collabMatrix').innerHTML =
+                        renderCollabMatrix(this.value)
+                    "
+                  />
+                  uderzenie ← asysta
+                </label>
+                <label class="collab-mode-label">
+                  <input
+                    type="radio"
+                    name="collabMode"
+                    value="combined"
+                    checked
+                    onchange="
+                      document.getElementById('collabMatrix').innerHTML =
+                        renderCollabMatrix(this.value)
+                    "
+                  />
+                  razem
+                </label>
+              </div>
+              <div class="players-table-wrap">
+                <div id="collabMatrix"></div>
+              </div>
+            </div>
+          </div>
+
           <div id="simPanel" class="stats-panel">
             <div id="sim-empty" class="sim-empty" style="display: none">
               Brak uderzeń z wartościami xG &mdash; dodaj uderzenia, aby
@@ -915,5 +1327,22 @@
     <script src="app.js" defer></script>
     <script src="stats.js" defer></script>
     <script src="simulation.js" defer></script>
+
+    <dialog id="playerDialog">
+      <div class="player-dialog-header">
+        <div class="player-dialog-title">
+          <span class="player-num-badge" id="pdgNum"></span>
+          <span
+            id="pdgName"
+            style="font-size: 16px; font-weight: 700; color: #111827"
+            >Zawodnik</span
+          >
+        </div>
+        <button class="player-dialog-close" id="pdgClose" aria-label="Zamknij">
+          ×
+        </button>
+      </div>
+      <div class="player-dialog-body" id="pdgBody"></div>
+    </dialog>
   </body>
 </html>
