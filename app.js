@@ -8,11 +8,14 @@ const teamFilter = document.getElementById('teamFilter');
 
 const shots = [];
 let hoveredShotIndex = null;
+let hoveredFromList = false;
 let activeTeamFilter = 'all';
 let isMirrored = false;
+let isReadMode = false;
 
 const mirrorBtn = document.getElementById('mirrorBtn');
 const pitchHint = null;
+const readModeBtn = document.getElementById('readModeBtn');
 const videoFragmentsCount = document.getElementById('videoFragmentsCount');
 const importFileInput = document.getElementById('importFileInput');
 
@@ -139,15 +142,102 @@ function drawPitch() {
     const isHovered = originalIndex === hoveredShotIndex;
     const displayX = isMirrored ? (2 * pitchMidX - shot.x) : shot.x;
     const displayY = isMirrored ? (2 * pitchMidY - shot.y) : shot.y;
-    drawShot(displayX, displayY, originalIndex + 1, isHovered, shot.team);
+    drawShot(displayX, displayY, originalIndex + 1, isHovered, shot.team, shot);
   });
 }
 
-function drawShot(x, y, number, isHovered = false, team = 'ourTeam') {
+function drawShot(x, y, number, isHovered = false, team = 'ourTeam', shot = null) {
   const radius = isHovered ? 6 : 4;
   const fontSize = isHovered ? 7 : 5.5;
   const lineWidth = isHovered ? 1.5 : 1;
   const fillColor = team === 'opponent' ? '#2563eb' : '#e11d48';
+
+  // draw goal lines and tooltip when hovered in read mode or from list
+  if (isHovered && shot && (isReadMode || hoveredFromList)) {
+    const scaleX = pitch.width / 68;
+    const scaleY = pitch.height / 35;
+    const goalHalfWidth = 7.32 / 2; // metres
+    // goal centre in canvas coords (always top of pitch before mirror)
+    const goalCentreCanvasX = pitch.x + pitch.width / 2;
+    const goalCentreCanvasY = pitch.y;
+    const postLCanvasX = goalCentreCanvasX - goalHalfWidth * scaleX;
+    const postRCanvasX = goalCentreCanvasX + goalHalfWidth * scaleX;
+
+    // apply mirror to goal coords
+    const pitchMidX = pitch.x + pitch.width / 2;
+    const pitchMidY = pitch.y + pitch.height / 2;
+    const gCX = isMirrored ? 2 * pitchMidX - goalCentreCanvasX : goalCentreCanvasX;
+    const gCY = isMirrored ? 2 * pitchMidY - goalCentreCanvasY : goalCentreCanvasY;
+    const gLX = isMirrored ? 2 * pitchMidX - postLCanvasX : postLCanvasX;
+    const gRX = isMirrored ? 2 * pitchMidX - postRCanvasX : postRCanvasX;
+    const gPostY = gCY;
+
+    // lines to posts
+    ctx.save();
+    ctx.setLineDash([3, 3]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(gLX, gPostY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(gRX, gPostY); ctx.stroke();
+    // bold centre line
+    ctx.setLineDash([4, 3]);
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(gCX, gCY); ctx.stroke();
+    ctx.restore();
+
+    // compute distance (metres) from shot canonical coords to goal centre
+    const cxM = parseFloat(shot.contextX); // metres from origin
+    const cyM = parseFloat(shot.contextY);
+    // goal centre in metres: contextX origin is left of penalty area
+    // pitch centre X = (68-40.32)/2 = 13.84m from left touch; goal centre is at pitch width centre = 34m from left touch
+    // So goal centre contextX = 34 - 13.84 = 20.16
+    const goalCxM = 20.16;
+    const goalCyM = 0; // goal line
+    const dx = cxM - goalCxM;
+    const dy = cyM - goalCyM;
+    const distM = Math.sqrt(dx * dx + dy * dy);
+
+    // shooting angle (angle subtended by goal)
+    const postLM = goalCxM - 7.32 / 2;
+    const postRM = goalCxM + 7.32 / 2;
+    const dL = Math.sqrt((cxM - postLM) ** 2 + cyM ** 2);
+    const dR = Math.sqrt((cxM - postRM) ** 2 + cyM ** 2);
+    const cosAngle = (dL * dL + dR * dR - 7.32 * 7.32) / (2 * dL * dR);
+    const angleDeg = Math.acos(Math.max(-1, Math.min(1, cosAngle))) * 180 / Math.PI;
+
+    // tooltip box
+    const pad = 4;
+    const lh = 9;
+    const label1 = `${distM.toFixed(1)} m`;
+    const label2 = `${angleDeg.toFixed(1)}\u00b0`;
+    const xgVal = shot.xg && shot.xg !== '' ? shot.xg : 'n/a';
+    const label3 = `xG: ${xgVal}`;
+    ctx.font = 'bold 8px Arial';
+    const w = Math.max(ctx.measureText(label1).width, ctx.measureText(label2).width, ctx.measureText(label3).width) + pad * 2;
+    const h = lh * 3 + pad * 2;
+    let tx = x + 8;
+    let ty = y - h / 2;
+    // keep inside canvas
+    if (tx + w > canvas.width - 4) tx = x - w - 8;
+    if (ty < 4) ty = 4;
+    if (ty + h > canvas.height - 4) ty = canvas.height - h - 4;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(tx, ty, w, h, 3);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#111827';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(label1, tx + pad, ty + pad);
+    ctx.fillText(label2, tx + pad, ty + pad + lh);
+    ctx.fillText(label3, tx + pad, ty + pad + lh * 2);
+  }
 
   ctx.beginPath();
   ctx.fillStyle = fillColor;
@@ -278,11 +368,18 @@ function createShot(x, y, team = 'ourTeam') {
 
   const last = shots.length > 0 ? shots[shots.length - 1] : null;
 
+  const cxM = ((x - originX) / scaleX);
+  const cyM = ((y - originY) / scaleY);
+  const goalCxM = 20.16;
+  const goalCyM = 0;
+  const distanceM = Math.sqrt((cxM - goalCxM) ** 2 + (cyM - goalCyM) ** 2).toFixed(2);
+
   return {
     x,
     y,
-    contextX: ((x - originX) / scaleX).toFixed(2),
-    contextY: ((y - originY) / scaleY).toFixed(2),
+    contextX: cxM.toFixed(2),
+    contextY: cyM.toFixed(2),
+    distance: distanceM,
     status: [],
     timestamp: last ? last.timestamp : '',
     matchTime: last ? last.matchTime : '',
@@ -294,12 +391,28 @@ function createShot(x, y, team = 'ourTeam') {
   };
 }
 
-function downloadCsv(filename, content) {
+async function downloadCsv(filename, content) {
   const csvWithBom = '\uFEFF' + content;
   const blob = new Blob([csvWithBom], { type: 'text/csv;charset=utf-8' });
+
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'Plik CSV', accept: { 'text/csv': ['.csv'] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return; // użytkownik anulował
+    }
+  }
+
+  // Fallback dla przeglądarek bez File System Access API
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-
   link.href = url;
   link.download = filename;
   link.style.display = 'none';
@@ -322,6 +435,7 @@ function exportShotsToCsv() {
     'venue',
     'contextX',
     'contextY',
+    'distance',
     'status',
     'timestamp',
     'matchTime',
@@ -348,6 +462,7 @@ function exportShotsToCsv() {
       venueSelect.value,
       shot.contextX,
       shot.contextY,
+      shot.distance,
       shot.status.join('|'),
       shot.timestamp,
       shot.matchTime,
@@ -368,6 +483,7 @@ function exportShotsToCsv() {
 }
 
 canvas.addEventListener('click', (event) => {
+  if (isReadMode) return;
   const { x, y } = getCanvasCoordinates(event);
 
   const pitchMidX = pitch.x + pitch.width / 2;
@@ -384,6 +500,7 @@ canvas.addEventListener('click', (event) => {
 
 canvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();
+  if (isReadMode) return;
   const { x, y } = getCanvasCoordinates(event);
 
   const pitchMidX = pitch.x + pitch.width / 2;
@@ -406,6 +523,19 @@ clearBtn.addEventListener('click', () => {
 });
 
 exportBtn.addEventListener('click', exportShotsToCsv);
+
+readModeBtn.addEventListener('click', () => {
+  isReadMode = !isReadMode;
+  readModeBtn.classList.toggle('active', isReadMode);
+  readModeBtn.innerHTML = isReadMode
+    ? '<i class="bi bi-cursor-fill"></i> Tryb odczytu'
+    : '<i class="bi bi-cursor"></i> Tryb odczytu';
+  canvas.style.cursor = isReadMode ? 'crosshair' : 'default';
+  if (!isReadMode) {
+    hoveredShotIndex = null;
+    drawPitch();
+  }
+});
 
 mirrorBtn.addEventListener('click', () => {
   isMirrored = !isMirrored;
@@ -496,10 +626,38 @@ shotList.addEventListener('input', (event) => {
   }
 });
 
+canvas.addEventListener('mousemove', (event) => {
+  if (!isReadMode) return;
+  const { x, y } = getCanvasCoordinates(event);
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
+  const visibleShots = getVisibleShots();
+  let found = null;
+  for (const shot of visibleShots) {
+    const displayX = isMirrored ? (2 * pitchMidX - shot.x) : shot.x;
+    const displayY = isMirrored ? (2 * pitchMidY - shot.y) : shot.y;
+    const dist = Math.sqrt((x - displayX) ** 2 + (y - displayY) ** 2);
+    if (dist <= 10) { found = shots.indexOf(shot); break; }
+  }
+  if (found !== hoveredShotIndex) {
+    hoveredShotIndex = found;
+    drawPitch();
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  if (!isReadMode) return;
+  if (hoveredShotIndex !== null) {
+    hoveredShotIndex = null;
+    drawPitch();
+  }
+});
+
 shotList.addEventListener('mouseover', (event) => {
   const shotItem = event.target.closest('.shot-item');
   if (!shotItem) return;
 
+  hoveredFromList = true;
   hoveredShotIndex = Number(shotItem.dataset.index);
   drawPitch();
 });
@@ -511,6 +669,7 @@ shotList.addEventListener('mouseout', (event) => {
   const relatedTarget = event.relatedTarget;
   if (relatedTarget && shotItem.contains(relatedTarget)) return;
 
+  hoveredFromList = false;
   hoveredShotIndex = null;
   drawPitch();
 });
@@ -572,6 +731,7 @@ function importFromCsv(text) {
       y,
       contextX: row.contextX,
       contextY: row.contextY,
+      distance: row.distance || '',
       status: row.status ? row.status.split('|').filter(Boolean) : [],
       timestamp: row.timestamp || '',
       matchTime: row.matchTime || '',
@@ -625,3 +785,5 @@ importFileInput.addEventListener('change', (event) => {
 
 drawPitch();
 renderShotsList();
+
+// Statystyki i zakładki obsługiwane przez stats.js

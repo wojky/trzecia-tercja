@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trzecia Tercja</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -66,9 +68,171 @@
         color: #e11d48;
       }
 
+      .card-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid #e5e7eb;
+        margin-bottom: 14px;
+      }
+
+      .card-tab {
+        padding: 8px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b7280;
+        cursor: pointer;
+        border: none;
+        background: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        border-radius: 0;
+        box-shadow: none;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+      }
+
+      .card-tab:hover {
+        color: #111827;
+        opacity: 1;
+      }
+
+      .card-tab.active {
+        color: #e11d48;
+        border-bottom-color: #e11d48;
+        background: none;
+      }
+
+      .stats-panel {
+        display: none;
+      }
+
+      .stats-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .stats-team-block {
+        border-radius: 12px;
+        padding: 14px 16px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+      }
+
+      .stats-team-block.our {
+        border-left: 4px solid #e11d48;
+      }
+      .stats-team-block.opp {
+        border-left: 4px solid #2563eb;
+      }
+
+      .stats-score {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+      }
+
+      .stats-score-number {
+        font-size: 36px;
+        font-weight: 800;
+        line-height: 1;
+        color: #111827;
+      }
+
+      .stats-score-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6b7280;
+      }
+
+      .stats-score-assists {
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-left: auto;
+      }
+
+      .stats-status-section {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      .stats-status-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #374151;
+        margin-bottom: 10px;
+      }
+
+      .stats-status-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 16px;
+      }
+
+      .stats-status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #4b5563;
+        padding: 3px 0;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .stats-status-row strong {
+        color: #111827;
+        font-weight: 700;
+        min-width: 24px;
+        text-align: right;
+      }
+
+      .stats-team-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        color: #374151;
+      }
+
+      .stats-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #4b5563;
+        padding: 3px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .stats-row:last-child {
+        border-bottom: none;
+      }
+
+      .stats-row strong {
+        color: #111827;
+        font-weight: 700;
+      }
+
+      .stats-chart-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 10px;
+      }
+
       .layout {
         display: grid;
-        grid-template-columns: minmax(300px, 820px) 320px;
+        grid-template-columns: 4fr 2fr;
         gap: 20px;
         align-items: start;
       }
@@ -87,6 +251,12 @@
         border-radius: 12px;
         background: #2d8f45;
         cursor: crosshair;
+      }
+
+      #xgTimelineChart {
+        background: #f8fafc;
+        border-radius: 10px;
+        cursor: default;
       }
 
       .filters-panel {
@@ -425,37 +595,121 @@
 
       <div class="layout" id="mainLayout" style="display: none">
         <div class="card">
-          <div class="filters-panel">
-            <div class="filter-field">
-              <label for="teamFilter">Pokaż uderzenia</label>
-              <select id="teamFilter">
-                <option value="all">Wszystkie</option>
-                <option value="ourTeam">Nasz zespół</option>
-                <option value="opponent">Przeciwnik</option>
-              </select>
+          <div class="card-tabs">
+            <button class="card-tab active" id="tabMap" type="button">
+              <i class="bi bi-map"></i> Mapa
+            </button>
+            <button class="card-tab" id="tabStats" type="button">
+              <i class="bi bi-bar-chart-line"></i> Statystyki
+            </button>
+          </div>
+          <div id="mapPanel">
+            <div class="filters-panel">
+              <div class="filter-field">
+                <label for="teamFilter">Pokaż uderzenia</label>
+                <select id="teamFilter">
+                  <option value="all">Wszystkie</option>
+                  <option value="ourTeam">Nasz zespół</option>
+                  <option value="opponent">Przeciwnik</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="pitchCanvas" width="800" height="470"></canvas>
+            <div class="toolbar">
+              <div class="toolbar-actions">
+                <button id="readModeBtn" type="button">
+                  <i class="bi bi-cursor"></i> Tryb odczytu
+                </button>
+                <button id="mirrorBtn" type="button">
+                  <i class="bi bi-arrow-up-circle-fill"></i> Kierunek ataku:
+                  góra
+                </button>
+                <button id="exportBtn" type="button">Eksportuj CSV</button>
+                <input
+                  id="importFileInput"
+                  type="file"
+                  accept=".csv"
+                  style="display: none"
+                />
+                <button id="clearBtn" type="button">
+                  Wyczyść wszystkie uderzenia
+                </button>
+              </div>
             </div>
           </div>
-          <canvas id="pitchCanvas" width="800" height="470"></canvas>
-          <div class="toolbar">
-            <div class="toolbar-actions">
-              <button id="mirrorBtn" type="button">
-                <i class="bi bi-arrow-up-circle-fill"></i> Kierunek ataku: góra
-              </button>
-              <button id="exportBtn" type="button">Eksportuj CSV</button>
-              <input
-                id="importFileInput"
-                type="file"
-                accept=".csv"
-                style="display: none"
-              />
-              <button id="clearBtn" type="button">
-                Wyczyść wszystkie uderzenia
-              </button>
+          <!-- /mapPanel -->
+
+          <div id="statsPanel" class="stats-panel">
+            <div class="stats-summary">
+              <div class="stats-team-block our">
+                <div class="stats-team-title">Nasz zespół</div>
+                <div class="stats-score">
+                  <span class="stats-score-number" id="s-our-goals">-</span>
+                  <span class="stats-score-label">gole</span>
+                  <span class="stats-score-assists" id="s-our-assists"
+                    >- asyst</span
+                  >
+                </div>
+                <div class="stats-row">
+                  <span>xG</span><strong id="s-our-xg">-</strong>
+                </div>
+                <div class="stats-row">
+                  <span>xA</span><strong id="s-our-xa">-</strong>
+                </div>
+                <div class="stats-row">
+                  <span>Uderzenia</span><strong id="s-our-shots">-</strong>
+                </div>
+                <div class="stats-row">
+                  <span>xG / uderzenie</span><strong id="s-our-xgps">-</strong>
+                </div>
+              </div>
+              <div class="stats-team-block opp">
+                <div class="stats-team-title">Przeciwnik</div>
+                <div class="stats-score">
+                  <span class="stats-score-number" id="s-opp-goals">-</span>
+                  <span class="stats-score-label">gole</span>
+                  <span class="stats-score-assists" id="s-opp-assists"
+                    >- asyst</span
+                  >
+                </div>
+                <div class="stats-row">
+                  <span>xG</span><strong id="s-opp-xg">-</strong>
+                </div>
+                <div class="stats-row">
+                  <span>xA</span><strong id="s-opp-xa">-</strong>
+                </div>
+                <div class="stats-row">
+                  <span>Uderzenia</span><strong id="s-opp-shots">-</strong>
+                </div>
+                <div class="stats-row">
+                  <span>xG / uderzenie</span><strong id="s-opp-xgps">-</strong>
+                </div>
+              </div>
             </div>
+            <div class="stats-status-section">
+              <div class="stats-summary">
+                <div>
+                  <div class="stats-status-title" style="color: #e11d48">
+                    Nasz zespół — statusy
+                  </div>
+                  <div class="stats-status-grid" id="s-status-grid-our"></div>
+                </div>
+                <div>
+                  <div class="stats-status-title" style="color: #2563eb">
+                    Przeciwnik — statusy
+                  </div>
+                  <div class="stats-status-grid" id="s-status-grid-opp"></div>
+                </div>
+              </div>
+            </div>
+            <div class="stats-chart-title">
+              Kumulatywne xG na osi czasu meczu
+            </div>
+            <canvas id="xgTimelineChart" style="max-height: 260px"></canvas>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" id="shotListCard">
           <div class="shots-header">
             <h2>Lista uderzeń</h2>
             <div class="counter" id="counter">0</div>
@@ -466,5 +720,6 @@
     </div>
 
     <script src="app.js" defer></script>
+    <script src="stats.js" defer></script>
   </body>
 </html>
