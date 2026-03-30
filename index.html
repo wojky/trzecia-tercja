@@ -1,295 +1,470 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mapa uderzeń - trzecia finałowa tercja</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      color: #1f2937;
-    }
-
-    .app {
-      max-width: 1200px;
-      margin: 24px auto;
-      padding: 0 16px;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-
-    p.description {
-      margin: 0 0 20px;
-      color: #4b5563;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(300px, 820px) 320px;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      padding: 16px;
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 12px;
-      background: #2d8f45;
-      cursor: crosshair;
-    }
-
-    .filters-panel {
-      display: flex;
-      gap: 12px;
-      align-items: end;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .filter-field {
-      display: grid;
-      gap: 6px;
-      min-width: 220px;
-    }
-
-    .filter-field label {
-      font-size: 13px;
-      color: #4b5563;
-    }
-
-    .filter-field select {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 14px;
-      background: #ffffff;
-      color: #111827;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .toolbar-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .hint {
-      color: #4b5563;
-      font-size: 14px;
-    }
-
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
-      background: #111827;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      opacity: 0.92;
-    }
-
-    .shots-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .shots-header h2 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .counter {
-      font-size: 14px;
-      color: #4b5563;
-    }
-
-    .shot-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 640px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .shot-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px;
-      background: #f9fafb;
-    }
-
-    .shot-item strong {
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .shot-meta {
-      display: grid;
-      gap: 4px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      color: #374151;
-    }
-
-    .shot-fields {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .shot-field {
-      display: grid;
-      gap: 4px;
-    }
-
-    .shot-field label {
-      font-size: 12px;
-      color: #4b5563;
-    }
-
-    .shot-field input {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 14px;
-      background: #ffffff;
-      color: #111827;
-    }
-
-    .shot-team {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    .shot-checkbox {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: #374151;
-    }
-
-    .shot-checkbox input {
-      width: auto;
-      margin: 0;
-      accent-color: #111827;
-    }
-
-    .shot-actions {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .shot-actions select {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 14px;
-      background: #ffffff;
-      color: #111827;
-    }
-
-    .delete-shot-btn {
-      background: #b91c1c;
-      padding: 8px 10px;
-      font-size: 13px;
-    }
-
-    .delete-shot-btn:hover {
-      opacity: 0.95;
-    }
-
-    .empty {
-      padding: 16px;
-      border: 1px dashed #cbd5e1;
-      border-radius: 12px;
-      color: #64748b;
-      background: #f8fafc;
-    }
-
-    @media (max-width: 960px) {
-      .layout {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trzecia Tercja</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <h1>Mapa uderzeń</h1>
-    <p class="description">Kliknij na boisku, aby zaznaczyć miejsce oddania uderzenia. Po prawej stronie zobaczysz listę zapisanych prób.</p>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f7fa;
+        color: #1f2937;
+      }
 
-    <div class="layout">
-      <div class="card">
-        <div class="filters-panel">
-          <div class="filter-field">
-            <label for="teamFilter">Pokaż uderzenia</label>
-            <select id="teamFilter">
-              <option value="all">Wszystkie</option>
-              <option value="ourTeam">Nasz zespół</option>
-              <option value="opponent">Przeciwnik</option>
+      .app {
+        max-width: 1200px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #111827;
+      }
+
+      .app-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+
+      .club-logo {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .app-logo {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+      }
+
+      .app-header-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .app-tagline {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #e11d48;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 820px) 320px;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        padding: 16px;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 12px;
+        background: #2d8f45;
+        cursor: crosshair;
+      }
+
+      .filters-panel {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .filter-field {
+        display: grid;
+        gap: 6px;
+        min-width: 220px;
+      }
+
+      .filter-field label {
+        font-size: 13px;
+        color: #4b5563;
+      }
+
+      .filter-field select {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #111827;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .hint {
+        color: #4b5563;
+        font-size: 14px;
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        background: #111827;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      button:hover {
+        opacity: 0.92;
+      }
+
+      .shots-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .shots-header h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .counter {
+        font-size: 14px;
+        color: #4b5563;
+      }
+
+      .shot-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 640px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+
+      .shot-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px;
+        background: #f9fafb;
+      }
+
+      .shot-item strong {
+        display: block;
+        margin-bottom: 0;
+      }
+
+      .shot-header-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .shot-coords {
+        font-size: 11px;
+        color: #9ca3af;
+      }
+
+      .shot-meta {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .shot-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+
+      .shot-fields-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .shot-field {
+        display: grid;
+        gap: 4px;
+      }
+
+      .shot-field label {
+        font-size: 12px;
+        color: #4b5563;
+      }
+
+      .shot-field input {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #111827;
+      }
+
+      .shot-team {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+
+      .shot-checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: #374151;
+      }
+
+      .shot-checkbox input {
+        width: auto;
+        margin: 0;
+        accent-color: #111827;
+      }
+
+      .shot-actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: start;
+      }
+
+      .shot-actions select {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 4px 6px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #111827;
+        min-height: 120px;
+      }
+
+      .delete-shot-btn {
+        background: #b91c1c;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .delete-shot-btn:hover {
+        opacity: 0.95;
+      }
+
+      button.active {
+        background: #1d4ed8;
+      }
+
+      .match-setup {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .match-setup-fields {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        flex: 1;
+      }
+
+      .setup-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .setup-field input,
+      .setup-field select {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #111827;
+      }
+
+      .setup-field input[type="text"] {
+        width: 180px;
+      }
+
+      .setup-field input[type="date"] {
+        width: 160px;
+      }
+
+      .setup-field input[type="number"] {
+        width: 80px;
+      }
+
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .empty {
+        padding: 16px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        color: #64748b;
+        background: #f8fafc;
+      }
+
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="app-header">
+        <svg
+          class="app-logo"
+          viewBox="0 0 48 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="48" height="48" rx="14" fill="#0f172a" />
+          <!-- three vertical bars, third one accent -->
+          <rect x="9" y="16" width="7" height="16" rx="2" fill="#1e293b" />
+          <rect x="20" y="11" width="7" height="21" rx="2" fill="#1e293b" />
+          <rect x="31" y="8" width="7" height="24" rx="2" fill="#e11d48" />
+          <!-- dot on top of third bar -->
+          <circle cx="34.5" cy="6" r="2" fill="#e11d48" />
+        </svg>
+        <img
+          src="Logo_Pomorzanin_Torun_stopka.png"
+          alt="Pomorzanin Toruń"
+          class="club-logo"
+        />
+        <div class="app-header-text">
+          <span class="app-tagline">Analityka boiskowa napędzana danymi</span>
+          <h1>Trzecia Tercja</h1>
+        </div>
+      </div>
+
+      <div class="match-setup card">
+        <div class="match-setup-fields">
+          <div class="setup-field">
+            <label for="opponentName">Przeciwnik</label>
+            <input id="opponentName" type="text" placeholder="Nazwa drużyny" />
+          </div>
+          <div class="setup-field">
+            <label for="matchDate">Data meczu</label>
+            <input id="matchDate" type="date" />
+          </div>
+          <div class="setup-field">
+            <label for="venueSelect">Miejsce</label>
+            <select id="venueSelect">
+              <option value="">— wybierz —</option>
+              <option value="dom">Dom</option>
+              <option value="wyjazd">Wyjazd</option>
+              <option value="neutralne">Neutralne</option>
             </select>
           </div>
-        </div>
-        <canvas id="pitchCanvas" width="800" height="470"></canvas>
-        <div class="toolbar">
-          <div class="hint">Widok: pełna trzecia finałowa tercja w proporcji 68 m × 35 m, z bramką u góry.</div>
-          <div class="toolbar-actions">
-            <button id="exportBtn" type="button">Eksportuj CSV</button>
-            <button id="clearBtn" type="button">Wyczyść wszystkie uderzenia</button>
+          <div class="setup-field">
+            <label for="videoFragmentsCount">Fragmenty wideo</label>
+            <input id="videoFragmentsCount" type="number" min="1" value="1" />
           </div>
         </div>
+        <button id="startBtn" type="button" disabled>
+          <i class="bi bi-play-fill"></i> Start
+        </button>
+        <button id="setupImportBtn" type="button">
+          <i class="bi bi-upload"></i> Wczytaj CSV
+        </button>
       </div>
 
-      <div class="card">
-        <div class="shots-header">
-          <h2>Lista uderzeń</h2>
-          <div class="counter" id="counter">0</div>
+      <div class="layout" id="mainLayout" style="display: none">
+        <div class="card">
+          <div class="filters-panel">
+            <div class="filter-field">
+              <label for="teamFilter">Pokaż uderzenia</label>
+              <select id="teamFilter">
+                <option value="all">Wszystkie</option>
+                <option value="ourTeam">Nasz zespół</option>
+                <option value="opponent">Przeciwnik</option>
+              </select>
+            </div>
+          </div>
+          <canvas id="pitchCanvas" width="800" height="470"></canvas>
+          <div class="toolbar">
+            <div class="toolbar-actions">
+              <button id="mirrorBtn" type="button">
+                <i class="bi bi-arrow-up-circle-fill"></i> Kierunek ataku: góra
+              </button>
+              <button id="exportBtn" type="button">Eksportuj CSV</button>
+              <input
+                id="importFileInput"
+                type="file"
+                accept=".csv"
+                style="display: none"
+              />
+              <button id="clearBtn" type="button">
+                Wyczyść wszystkie uderzenia
+              </button>
+            </div>
+          </div>
         </div>
-        <div id="shotList" class="shot-list"></div>
+
+        <div class="card">
+          <div class="shots-header">
+            <h2>Lista uderzeń</h2>
+            <div class="counter" id="counter">0</div>
+          </div>
+          <div id="shotList" class="shot-list"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="app.js" defer></script>
-</body>
+    <script src="app.js" defer></script>
+  </body>
 </html>

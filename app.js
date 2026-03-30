@@ -9,6 +9,46 @@ const teamFilter = document.getElementById('teamFilter');
 const shots = [];
 let hoveredShotIndex = null;
 let activeTeamFilter = 'all';
+let isMirrored = false;
+
+const mirrorBtn = document.getElementById('mirrorBtn');
+const pitchHint = null;
+const videoFragmentsCount = document.getElementById('videoFragmentsCount');
+const importFileInput = document.getElementById('importFileInput');
+
+const opponentNameInput = document.getElementById('opponentName');
+const matchDateInput = document.getElementById('matchDate');
+const venueSelect = document.getElementById('venueSelect');
+const startBtn = document.getElementById('startBtn');
+const mainLayout = document.getElementById('mainLayout');
+const setupImportBtn = document.getElementById('setupImportBtn');
+
+function validateStart() {
+  const ready =
+    opponentNameInput.value.trim() !== '' &&
+    matchDateInput.value !== '' &&
+    venueSelect.value !== '';
+  startBtn.disabled = !ready;
+}
+
+opponentNameInput.addEventListener('input', validateStart);
+matchDateInput.addEventListener('change', validateStart);
+venueSelect.addEventListener('change', validateStart);
+
+startBtn.addEventListener('click', () => {
+  mainLayout.style.display = '';
+  startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
+  startBtn.classList.add('active');
+});
+
+function getFragmentOptions(selectedValue) {
+  const count = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
+  let options = '';
+  for (let i = 1; i <= count; i++) {
+    options += `<option value="${i}" ${selectedValue == i ? 'selected' : ''}>${i}</option>`;
+  }
+  return options;
+}
 
 const pitch = {
   x: 40,
@@ -33,6 +73,15 @@ function drawPitch() {
 
   ctx.fillStyle = '#2d8f45';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  if (isMirrored) {
+    // obrot 180 wzgledem srodka boiska: translate(2*midX, 2*midY) + scale(-1,-1)
+    const pitchMidX = pitch.x + pitch.width / 2;
+    const pitchMidY = pitch.y + pitch.height / 2;
+    ctx.translate(2 * pitchMidX, 2 * pitchMidY);
+    ctx.scale(-1, -1);
+  }
 
   ctx.fillStyle = '#339c50';
   ctx.fillRect(pitch.x, pitch.y, pitch.width, pitch.height);
@@ -78,25 +127,26 @@ function drawPitch() {
   ctx.arc(penaltySpotX, penaltySpotY, 9.15 * scaleY, 0.23 * Math.PI, 0.77 * Math.PI, false);
   ctx.stroke();
 
-  ctx.fillStyle = 'rgba(255,255,255,0.9)';
-  ctx.font = '14px Arial';
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'bottom';
-  ctx.fillText('granica tercji finałowej', pitch.x + pitch.width - 8, pitch.y + pitch.height - 6);
+  ctx.restore();
 
+  // strzaly rysowane po restore() z jawnie obliczonym display X i Y
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
   const visibleShots = getVisibleShots();
 
   visibleShots.forEach((shot) => {
     const originalIndex = shots.indexOf(shot);
     const isHovered = originalIndex === hoveredShotIndex;
-    drawShot(shot.x, shot.y, originalIndex + 1, isHovered, shot.team);
+    const displayX = isMirrored ? (2 * pitchMidX - shot.x) : shot.x;
+    const displayY = isMirrored ? (2 * pitchMidY - shot.y) : shot.y;
+    drawShot(displayX, displayY, originalIndex + 1, isHovered, shot.team);
   });
 }
 
 function drawShot(x, y, number, isHovered = false, team = 'ourTeam') {
-  const radius = isHovered ? 12 : 8;
-  const fontSize = isHovered ? 14 : 11;
-  const lineWidth = isHovered ? 3 : 2;
+  const radius = isHovered ? 6 : 4;
+  const fontSize = isHovered ? 7 : 5.5;
+  const lineWidth = isHovered ? 1.5 : 1;
   const fillColor = team === 'opponent' ? '#2563eb' : '#e11d48';
 
   ctx.beginPath();
@@ -124,37 +174,47 @@ function renderShotsList() {
     return;
   }
 
-  shotList.innerHTML = visibleShots
+  shotList.innerHTML = [...visibleShots].reverse()
     .map((shot) => {
       const index = shots.indexOf(shot);
       return `
       <div class="shot-item" data-index="${index}">
-        <strong>Uderzenie ${index + 1}</strong>
-        <div class="shot-meta">
-          <div>X: ${shot.contextX} m</div>
-          <div>Y: ${shot.contextY} m</div>
-          <div>Układ: (0,0) = lewa krawędź pola karnego na linii końcowej</div>
+        <div class="shot-header-row">
+          <strong>Uderzenie ${index + 1}</strong>
+          <span class="shot-coords">x: ${shot.contextX} y: ${shot.contextY}</span>
         </div>
         <div class="shot-fields">
-          <div class="shot-field">
-            <label for="timestamp-${index}">Timestamp</label>
-            <input id="timestamp-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="timestamp" value="${shot.timestamp || ''}" placeholder="np. 00:12:34" />
+          <div class="shot-fields-row">
+            <div class="shot-field">
+              <label for="fragment-${index}">Fragment wideo</label>
+              <select id="fragment-${index}" class="shot-text-input shot-fragment-select" data-index="${index}" data-field="videoFragment">
+                ${getFragmentOptions(shot.videoFragment)}
+              </select>
+            </div>
+            <div class="shot-field">
+              <label for="timestamp-${index}">Timestamp</label>
+              <input id="timestamp-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="timestamp" value="${shot.timestamp || ''}" placeholder="np. 00:12:34" />
+            </div>
           </div>
-          <div class="shot-field">
-            <label for="match-time-${index}">Czas meczu</label>
-            <input id="match-time-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="matchTime" value="${shot.matchTime || ''}" placeholder="np. 67:15" />
+          <div class="shot-fields-row">
+            <div class="shot-field">
+              <label for="match-time-${index}">Czas meczu</label>
+              <input id="match-time-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="matchTime" value="${shot.matchTime || ''}" placeholder="np. 67:15" />
+            </div>
+            <div class="shot-field">
+              <label for="xg-${index}">xG</label>
+              <input id="xg-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="xg" value="${shot.xg || ''}" placeholder="np. 0.18" />
+            </div>
           </div>
-          <div class="shot-field">
-            <label for="player-${index}">Nr zawodnika</label>
-            <input id="player-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="playerNumber" value="${shot.playerNumber || ''}" placeholder="np. 9" />
-          </div>
-          <div class="shot-field">
-            <label for="passer-${index}">Nr zawodnika podającego</label>
-            <input id="passer-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="passerNumber" value="${shot.passerNumber || ''}" placeholder="np. 10" />
-          </div>
-          <div class="shot-field">
-            <label for="xg-${index}">xG</label>
-            <input id="xg-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="xg" value="${shot.xg || ''}" placeholder="np. 0.18" />
+          <div class="shot-fields-row">
+            <div class="shot-field">
+              <label for="player-${index}">Zawodnik</label>
+              <input id="player-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="playerNumber" value="${shot.playerNumber || ''}" placeholder="np. 9" />
+            </div>
+            <div class="shot-field">
+              <label for="passer-${index}">Asysta</label>
+              <input id="passer-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="passerNumber" value="${shot.passerNumber || ''}" placeholder="np. 10" />
+            </div>
           </div>
         </div>
         <div class="shot-team">
@@ -168,20 +228,20 @@ function renderShotsList() {
           </label>
         </div>
         <div class="shot-actions">
-          <select data-index="${index}" class="shot-status-select">
-            <option value="gol" ${shot.status === 'gol' ? 'selected' : ''}>GOL</option>
-            <option value="zablokowany" ${shot.status === 'zablokowany' ? 'selected' : ''}>Zablokowany</option>
-            <option value="niecelny" ${shot.status === 'niecelny' ? 'selected' : ''}>Niecelny</option>
-            <option value="dosrodkowanie" ${shot.status === 'dosrodkowanie' ? 'selected' : ''}>Dośrodkowanie</option>
-            <option value="uderzenie-glowa" ${shot.status === 'uderzenie-glowa' ? 'selected' : ''}>Uderzenie głową</option>
-            <option value="z-powietrza-noga" ${shot.status === 'z-powietrza-noga' ? 'selected' : ''}>Z powietrza nogą</option>
-            <option value="1-kontakt" ${shot.status === '1-kontakt' ? 'selected' : ''}>1 kontakt</option>
-            <option value="zza-pk" ${shot.status === 'zza-pk' ? 'selected' : ''}>Zza PK</option>
-            <option value="rzut-karny" ${shot.status === 'rzut-karny' ? 'selected' : ''}>Rzut karny</option>
-            <option value="interwencja-bramkarza" ${shot.status === 'interwencja-bramkarza' ? 'selected' : ''}>Interwencja bramkarza</option>
-            <option value="po-bledzie-indywidualnym" ${shot.status === 'po-bledzie-indywidualnym' ? 'selected' : ''}>Po błędzie indywidualnym</option>
+          <select data-index="${index}" class="shot-status-select" multiple>
+            <option value="gol" ${shot.status.includes('gol') ? 'selected' : ''}>GOL</option>
+            <option value="zablokowany" ${shot.status.includes('zablokowany') ? 'selected' : ''}>Zablokowany</option>
+            <option value="niecelny" ${shot.status.includes('niecelny') ? 'selected' : ''}>Niecelny</option>
+            <option value="dosrodkowanie" ${shot.status.includes('dosrodkowanie') ? 'selected' : ''}>Dośrodkowanie</option>
+            <option value="uderzenie-glowa" ${shot.status.includes('uderzenie-glowa') ? 'selected' : ''}>Uderzenie głową</option>
+            <option value="z-powietrza-noga" ${shot.status.includes('z-powietrza-noga') ? 'selected' : ''}>Z powietrza nogą</option>
+            <option value="1-kontakt" ${shot.status.includes('1-kontakt') ? 'selected' : ''}>1 kontakt</option>
+            <option value="zza-pk" ${shot.status.includes('zza-pk') ? 'selected' : ''}>Zza PK</option>
+            <option value="rzut-karny" ${shot.status.includes('rzut-karny') ? 'selected' : ''}>Rzut karny</option>
+            <option value="interwencja-bramkarza" ${shot.status.includes('interwencja-bramkarza') ? 'selected' : ''}>Interwencja bramkarza</option>
+            <option value="po-bledzie-indywidualnym" ${shot.status.includes('po-bledzie-indywidualnym') ? 'selected' : ''}>Po błędzie indywidualnym</option>
           </select>
-          <button type="button" class="delete-shot-btn" data-index="${index}">Usuń</button>
+          <button type="button" class="delete-shot-btn" data-index="${index}" title="Usuń"><i class="bi bi-trash3-fill"></i></button>
         </div>
       </div>
     `;
@@ -209,25 +269,28 @@ function isInsidePitch(x, y) {
   );
 }
 
-function createShot(x, y) {
+function createShot(x, y, team = 'ourTeam') {
   const scaleX = pitch.width / 68;
   const scaleY = pitch.height / 35;
   const penaltyAreaLeftX = pitch.x + ((68 - 40.32) / 2) * scaleX;
   const originX = penaltyAreaLeftX;
   const originY = pitch.y;
 
+  const last = shots.length > 0 ? shots[shots.length - 1] : null;
+
   return {
     x,
     y,
     contextX: ((x - originX) / scaleX).toFixed(2),
     contextY: ((y - originY) / scaleY).toFixed(2),
-    status: 'niecelny',
-    timestamp: '',
-    matchTime: '',
+    status: [],
+    timestamp: last ? last.timestamp : '',
+    matchTime: last ? last.matchTime : '',
     playerNumber: '',
     passerNumber: '',
     xg: '',
-    team: 'ourTeam',
+    videoFragment: last ? last.videoFragment : '',
+    team,
   };
 }
 
@@ -254,6 +317,9 @@ function exportShotsToCsv() {
 
   const headers = [
     'id',
+    'opponent',
+    'matchDate',
+    'venue',
     'contextX',
     'contextY',
     'status',
@@ -262,6 +328,7 @@ function exportShotsToCsv() {
     'playerNumber',
     'passerNumber',
     'xg',
+    'videoFragment',
     'team'
   ];
 
@@ -276,14 +343,18 @@ function exportShotsToCsv() {
   shots.forEach((shot, index) => {
     const row = [
       index + 1,
+      opponentNameInput.value,
+      matchDateInput.value,
+      venueSelect.value,
       shot.contextX,
       shot.contextY,
-      shot.status,
+      shot.status.join('|'),
       shot.timestamp,
       shot.matchTime,
       shot.playerNumber,
       shot.passerNumber,
       shot.xg,
+      shot.videoFragment,
       shot.team,
     ];
 
@@ -291,16 +362,38 @@ function exportShotsToCsv() {
   });
 
   const csvContent = lines.join('\n');
-  const filenameDate = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-  downloadCsv(`uderzenia-${filenameDate}.csv`, csvContent);
+  const filenameDate = matchDateInput.value || new Date().toISOString().slice(0, 10);
+  const filenameOpponent = opponentNameInput.value.trim().replace(/[^a-zA-Z0-9\-_]/g, '_') || 'eksport';
+  downloadCsv(`uderzenia-${filenameDate}-${filenameOpponent}.csv`, csvContent);
 }
 
 canvas.addEventListener('click', (event) => {
   const { x, y } = getCanvasCoordinates(event);
 
-  if (!isInsidePitch(x, y)) return;
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
+  const canonicalX = isMirrored ? (2 * pitchMidX - x) : x;
+  const canonicalY = isMirrored ? (2 * pitchMidY - y) : y;
 
-  shots.push(createShot(x, y));
+  if (!isInsidePitch(canonicalX, canonicalY)) return;
+
+  shots.push(createShot(canonicalX, canonicalY, 'ourTeam'));
+  drawPitch();
+  renderShotsList();
+});
+
+canvas.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+  const { x, y } = getCanvasCoordinates(event);
+
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
+  const canonicalX = isMirrored ? (2 * pitchMidX - x) : x;
+  const canonicalY = isMirrored ? (2 * pitchMidY - y) : y;
+
+  if (!isInsidePitch(canonicalX, canonicalY)) return;
+
+  shots.push(createShot(canonicalX, canonicalY, 'opponent'));
   drawPitch();
   renderShotsList();
 });
@@ -313,6 +406,19 @@ clearBtn.addEventListener('click', () => {
 });
 
 exportBtn.addEventListener('click', exportShotsToCsv);
+
+mirrorBtn.addEventListener('click', () => {
+  isMirrored = !isMirrored;
+  mirrorBtn.classList.toggle('active', isMirrored);
+  mirrorBtn.innerHTML = isMirrored
+    ? '<i class="bi bi-arrow-down-circle-fill"></i> Kierunek ataku: dół'
+    : '<i class="bi bi-arrow-up-circle-fill"></i> Kierunek ataku: góra';
+  drawPitch();
+});
+
+videoFragmentsCount.addEventListener('change', () => {
+  renderShotsList();
+});
 
 teamFilter.addEventListener('change', (event) => {
   activeTeamFilter = event.target.value;
@@ -343,7 +449,16 @@ shotList.addEventListener('change', (event) => {
   if (select) {
     const index = Number(select.dataset.index);
     if (shots[index]) {
-      shots[index].status = select.value;
+      shots[index].status = Array.from(select.selectedOptions).map(o => o.value);
+    }
+    return;
+  }
+
+  const fragmentSelect = event.target.closest('.shot-fragment-select');
+  if (fragmentSelect) {
+    const index = Number(fragmentSelect.dataset.index);
+    if (shots[index]) {
+      shots[index].videoFragment = fragmentSelect.value;
     }
     return;
   }
@@ -398,6 +513,114 @@ shotList.addEventListener('mouseout', (event) => {
 
   hoveredShotIndex = null;
   drawPitch();
+});
+
+function parseCsvLine(line) {
+  const values = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === ',' && !inQuotes) {
+      values.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  values.push(current);
+  return values;
+}
+
+function importFromCsv(text) {
+  const lines = text.replace(/^\uFEFF/, '').split('\n').filter(l => l.trim() !== '');
+  if (lines.length < 2) {
+    alert('Plik CSV jest pusty lub nie zawiera danych.');
+    return;
+  }
+
+  const headers = parseCsvLine(lines[0]).map(h => h.trim());
+
+  const scaleX = pitch.width / 68;
+  const scaleY = pitch.height / 35;
+  const penaltyAreaLeftX = pitch.x + ((68 - 40.32) / 2) * scaleX;
+  const originX = penaltyAreaLeftX;
+  const originY = pitch.y;
+
+  const imported = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = parseCsvLine(lines[i]);
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = vals[idx] ?? ''; });
+
+    const contextX = parseFloat(row.contextX);
+    const contextY = parseFloat(row.contextY);
+    if (isNaN(contextX) || isNaN(contextY)) continue;
+
+    const x = originX + contextX * scaleX;
+    const y = originY + contextY * scaleY;
+
+    imported.push({
+      x,
+      y,
+      contextX: row.contextX,
+      contextY: row.contextY,
+      status: row.status ? row.status.split('|').filter(Boolean) : [],
+      timestamp: row.timestamp || '',
+      matchTime: row.matchTime || '',
+      playerNumber: row.playerNumber || '',
+      passerNumber: row.passerNumber || '',
+      xg: row.xg || '',
+      videoFragment: row.videoFragment || '',
+      team: row.team === 'opponent' ? 'opponent' : 'ourTeam',
+    });
+  }
+
+  if (imported.length === 0) {
+    alert('Nie znaleziono poprawnych danych w pliku CSV.');
+    return;
+  }
+
+  // Restore match metadata from first row
+  const firstRow = (() => {
+    const vals = parseCsvLine(lines[1]);
+    const r = {};
+    headers.forEach((h, idx) => { r[h] = vals[idx] ?? ''; });
+    return r;
+  })();
+  if (firstRow.opponent) opponentNameInput.value = firstRow.opponent;
+  if (firstRow.matchDate) matchDateInput.value = firstRow.matchDate;
+  if (firstRow.venue) venueSelect.value = firstRow.venue;
+  validateStart();
+  mainLayout.style.display = '';
+  startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
+  startBtn.classList.add('active');
+
+  shots.length = 0;
+  imported.forEach(s => shots.push(s));
+  hoveredShotIndex = null;
+  drawPitch();
+  renderShotsList();
+}
+
+setupImportBtn.addEventListener('click', () => {
+  importFileInput.value = '';
+  importFileInput.click();
+});
+
+importFileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => importFromCsv(e.target.result);
+  reader.readAsText(file, 'UTF-8');
 });
 
 drawPitch();
