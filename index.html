@@ -14,6 +14,10 @@
       * {
         box-sizing: border-box;
       }
+
+      html {
+        overflow-y: scroll;
+      }
       body {
         margin: 0;
         font-family: Arial, sans-serif;
@@ -379,7 +383,8 @@
       }
 
       #goalDistChart,
-      #goalDiffChart {
+      #goalDiffChart,
+      #compareRadarChart {
         background: #f8fafc;
         border-radius: 10px;
         cursor: default;
@@ -704,6 +709,106 @@
 
       .collab-mode-label input {
         display: none;
+      }
+
+      /* ─── Player comparison ─────────────────────────────────────────────── */
+
+      .cmp-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+
+      .cmp-pill {
+        --cmp-color: #6b7280;
+        border: 2px solid #d1d5db;
+        border-radius: 20px;
+        background: #f9fafb;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 4px 14px;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s,
+          opacity 0.15s;
+        min-width: 44px;
+        text-align: center;
+      }
+
+      .cmp-pill:hover:not(:disabled) {
+        border-color: #9ca3af;
+        background: #f1f5f9;
+      }
+
+      .cmp-pill:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      .cmp-table {
+        border-collapse: collapse;
+        font-size: 13px;
+        width: 100%;
+        max-width: 480px;
+      }
+
+      .cmp-table th,
+      .cmp-table td {
+        padding: 7px 12px;
+        border: 1px solid #e5e7eb;
+        text-align: right;
+      }
+
+      .cmp-table thead th {
+        background: #f1f5f9;
+        font-weight: 700;
+        font-size: 12px;
+        text-align: right;
+      }
+
+      .cmp-table thead th:first-child {
+        text-align: left;
+      }
+
+      .cmp-metric-label {
+        text-align: left !important;
+        color: #374151;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .cmp-best {
+        background: rgba(16, 185, 129, 0.12);
+        color: #059669;
+        font-weight: 700;
+        border-radius: 4px;
+      }
+
+      .cmp-side-by-side {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .cmp-radar-wrap {
+        flex: 0 0 320px;
+        max-width: 320px;
+        min-width: 240px;
+      }
+
+      .cmp-table-wrap {
+        flex: 1 1 220px;
+        overflow-x: auto;
+      }
+
+      .cmp-table {
+        width: 100%;
+        max-width: none;
       }
 
       .filters-panel {
@@ -1254,6 +1359,35 @@
                 <div id="collabMatrix"></div>
               </div>
             </div>
+
+            <!-- ─── Porównanie zawodników ─────────────────────────────── -->
+            <div id="compareSection" style="display: none; margin-top: 28px">
+              <div class="stats-chart-title">Porównanie zawodników</div>
+              <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
+                Wybierz od 2 do 3 zawodników, aby zobaczyć ich porównanie na
+                wykresie radarowym oraz w tabeli.
+                <strong>Podświetlona</strong> komórka w tabeli oznacza najlepszy
+                wynik w danej kategorii.
+              </p>
+              <div id="comparePicker" class="cmp-picker"></div>
+              <p
+                id="compareHint"
+                style="font-size: 12px; color: #9ca3af; margin: 8px 0 0"
+              >
+                Zaznacz co najmniej 2 zawodników, aby wyświetlić porównanie.
+              </p>
+              <div
+                id="compareChartWrap"
+                style="display: none; margin-top: 20px"
+              >
+                <div class="cmp-side-by-side">
+                  <div class="cmp-radar-wrap">
+                    <canvas id="compareRadarChart"></canvas>
+                  </div>
+                  <div id="compareTable" class="cmp-table-wrap"></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div id="simPanel" class="stats-panel">
@@ -1326,6 +1460,7 @@
 
     <script src="app.js" defer></script>
     <script src="stats.js" defer></script>
+    <script src="players.js" defer></script>
     <script src="simulation.js" defer></script>
 
     <dialog id="playerDialog">
