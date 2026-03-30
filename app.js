@@ -12,6 +12,12 @@ let hoveredFromList = false;
 let activeTeamFilter = 'all';
 let isMirrored = false;
 let isReadMode = false;
+let assistModeIndex = null;
+let _assistToastTimer = null;
+let assistSubMode = 'person'; // 'person' | 'arrow'
+let _arrowDrawing = false;
+let _arrowStart = null;      // { displayX, displayY, canonicalX, canonicalY }
+let _arrowPreviewEnd = null; // { displayX, displayY }
 
 const mirrorBtn = document.getElementById('mirrorBtn');
 const pitchHint = null;
@@ -43,6 +49,42 @@ startBtn.addEventListener('click', () => {
   startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
   startBtn.classList.add('active');
 });
+
+function showAssistToast(msg) {
+  document.getElementById('assistToastMsg').textContent = msg;
+  const toast = document.getElementById('assistToast');
+  clearTimeout(_assistToastTimer);
+  toast.classList.add('visible');
+  _assistToastTimer = setTimeout(() => toast.classList.remove('visible'), 3000);
+}
+
+function enterAssistMode(index) {
+  assistModeIndex = index;
+  assistSubMode = 'person';
+  _arrowDrawing = false;
+  _arrowStart = null;
+  _arrowPreviewEnd = null;
+  document.querySelectorAll('.shot-passer-edit-btn').forEach(b => b.classList.remove('assist-active'));
+  const btn = document.querySelector(`.shot-item[data-index="${index}"] .shot-passer-edit-btn`);
+  if (btn) btn.classList.add('assist-active');
+  document.getElementById('assistModeBar').style.display = 'flex';
+  // default: person button selected
+  document.getElementById('assistModePersonBtn').classList.add('selected');
+  document.getElementById('assistModeArrowBtn').classList.remove('selected');
+  showAssistToast('Tryb rysowania asysty');
+}
+
+function cancelAssistMode() {
+  document.querySelectorAll('.shot-passer-edit-btn').forEach(b => b.classList.remove('assist-active'));
+  assistModeIndex = null;
+  assistSubMode = 'person';
+  _arrowDrawing = false;
+  _arrowStart = null;
+  _arrowPreviewEnd = null;
+  document.getElementById('assistModeBar').style.display = 'none';
+  document.getElementById('assistModePersonBtn').classList.remove('selected');
+  document.getElementById('assistModeArrowBtn').classList.remove('selected');
+}
 
 function getFragmentOptions(selectedValue) {
   const count = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
@@ -135,15 +177,82 @@ function drawPitch() {
   // strzaly rysowane po restore() z jawnie obliczonym display X i Y
   const pitchMidX = pitch.x + pitch.width / 2;
   const pitchMidY = pitch.y + pitch.height / 2;
-  const visibleShots = getVisibleShots();
+  const visibleShots = assistModeIndex !== null
+    ? shots.filter((_, i) => i === assistModeIndex)
+    : getVisibleShots();
 
   visibleShots.forEach((shot) => {
     const originalIndex = shots.indexOf(shot);
     const isHovered = originalIndex === hoveredShotIndex;
+    const isAssistTarget = originalIndex === assistModeIndex;
+    const showOverlay = isAssistTarget || (isHovered && (isReadMode || hoveredFromList));
     const displayX = isMirrored ? (2 * pitchMidX - shot.x) : shot.x;
     const displayY = isMirrored ? (2 * pitchMidY - shot.y) : shot.y;
+    if (showOverlay) drawAssistOverlay(shot, isAssistTarget, displayX, displayY);
     drawShot(displayX, displayY, originalIndex + 1, isHovered, shot.team, shot);
   });
+}
+
+function _drawArrow(x1, y1, x2, y2, isPreview) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  if (len < 5) return;
+  ctx.save();
+  ctx.strokeStyle = isPreview ? 'rgba(251,191,36,0.7)' : '#fbbf24';
+  ctx.fillStyle  = isPreview ? 'rgba(251,191,36,0.7)' : '#fbbf24';
+  ctx.lineWidth = 2.5;
+  if (isPreview) ctx.setLineDash([5, 3]);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  const angle = Math.atan2(dy, dx);
+  const headLen = 12;
+  const headAngle = Math.PI / 7;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - headLen * Math.cos(angle - headAngle), y2 - headLen * Math.sin(angle - headAngle));
+  ctx.lineTo(x2 - headLen * Math.cos(angle + headAngle), y2 - headLen * Math.sin(angle + headAngle));
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawAssistOverlay(shot, isAssistTarget, shotDisplayX, shotDisplayY) {
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
+
+  if (shot.assistPos) {
+    const px = isMirrored ? (2 * pitchMidX - shot.assistPos.x) : shot.assistPos.x;
+    const py = isMirrored ? (2 * pitchMidY - shot.assistPos.y) : shot.assistPos.y;
+    ctx.beginPath();
+    ctx.arc(px, py, 7, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(251,191,36,0.9)';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#111827';
+    ctx.font = 'bold 8px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('A', px, py + 0.5);
+  }
+
+  if (shot.assistArrow) {
+    const x1 = isMirrored ? (2 * pitchMidX - shot.assistArrow.x1) : shot.assistArrow.x1;
+    const y1 = isMirrored ? (2 * pitchMidY - shot.assistArrow.y1) : shot.assistArrow.y1;
+    const x2 = isMirrored ? (2 * pitchMidX - shot.assistArrow.x2) : shot.assistArrow.x2;
+    const y2 = isMirrored ? (2 * pitchMidY - shot.assistArrow.y2) : shot.assistArrow.y2;
+    _drawArrow(x1, y1, x2, y2, false);
+  }
+
+  // live arrow preview while dragging
+  if (isAssistTarget && assistSubMode === 'arrow' && _arrowDrawing && _arrowStart && _arrowPreviewEnd) {
+    _drawArrow(_arrowStart.displayX, _arrowStart.displayY, _arrowPreviewEnd.displayX, _arrowPreviewEnd.displayY, true);
+  }
 }
 
 function drawShot(x, y, number, isHovered = false, team = 'ourTeam', shot = null) {
@@ -303,7 +412,10 @@ function renderShotsList() {
             </div>
             <div class="shot-field">
               <label for="passer-${index}">Asysta</label>
-              <input id="passer-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="passerNumber" value="${shot.passerNumber || ''}" placeholder="np. 10" />
+              <div class="shot-field-input-row">
+                <input id="passer-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="passerNumber" value="${shot.passerNumber || ''}" placeholder="np. 10" />
+                <button type="button" class="shot-passer-edit-btn${assistModeIndex === index ? ' assist-active' : ''}" title="Tryb rysowania asysty"><i class="bi bi-pencil"></i></button>
+              </div>
             </div>
           </div>
         </div>
@@ -388,6 +500,8 @@ function createShot(x, y, team = 'ourTeam') {
     passerNumber: '',
     xg: '',
     videoFragment: last ? last.videoFragment : '',
+    assistPos: null,
+    assistArrow: null,
     team,
   };
 }
@@ -445,7 +559,14 @@ function exportShotsToCsv() {
     'xg',
     'videoFragment',
     'videoFragmentsCount',
-    'team'
+    'team',
+    'assistPosX',
+    'assistPosY',
+    'assistArrowX1',
+    'assistArrowY1',
+    'assistArrowX2',
+    'assistArrowY2',
+    'assistArrowLength',
   ];
 
   const escapeCsvValue = (value) => {
@@ -474,6 +595,19 @@ function exportShotsToCsv() {
       shot.videoFragment,
       videoFragmentsCount.value,
       shot.team,
+      shot.assistPos ? shot.assistPos.x.toFixed(2) : '',
+      shot.assistPos ? shot.assistPos.y.toFixed(2) : '',
+      shot.assistArrow ? shot.assistArrow.x1.toFixed(2) : '',
+      shot.assistArrow ? shot.assistArrow.y1.toFixed(2) : '',
+      shot.assistArrow ? shot.assistArrow.x2.toFixed(2) : '',
+      shot.assistArrow ? shot.assistArrow.y2.toFixed(2) : '',
+      shot.assistArrow ? (() => {
+        const scaleX = pitch.width / 68;
+        const scaleY = pitch.height / 35;
+        const dxM = (shot.assistArrow.x2 - shot.assistArrow.x1) / scaleX;
+        const dyM = (shot.assistArrow.y2 - shot.assistArrow.y1) / scaleY;
+        return Math.sqrt(dxM * dxM + dyM * dyM).toFixed(2);
+      })() : '',
     ];
 
     lines.push(row.map(escapeCsvValue).join(','));
@@ -496,6 +630,15 @@ canvas.addEventListener('click', (event) => {
 
   if (!isInsidePitch(canonicalX, canonicalY)) return;
 
+  if (assistModeIndex !== null) {
+    if (assistSubMode === 'person') {
+      shots[assistModeIndex].assistPos = { x: canonicalX, y: canonicalY };
+      drawPitch();
+    }
+    // arrow mode handled by mousedown/mouseup
+    return;
+  }
+
   shots.push(createShot(canonicalX, canonicalY, 'ourTeam'));
   drawPitch();
   renderShotsList();
@@ -503,6 +646,7 @@ canvas.addEventListener('click', (event) => {
 
 canvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();
+  if (assistModeIndex !== null) return;
   if (isReadMode) return;
   const { x, y } = getCanvasCoordinates(event);
 
@@ -518,7 +662,44 @@ canvas.addEventListener('contextmenu', (event) => {
   renderShotsList();
 });
 
+canvas.addEventListener('mousedown', (event) => {
+  if (assistModeIndex === null || assistSubMode !== 'arrow') return;
+  if (event.button !== 0) return;
+  const { x, y } = getCanvasCoordinates(event);
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
+  const canonicalX = isMirrored ? (2 * pitchMidX - x) : x;
+  const canonicalY = isMirrored ? (2 * pitchMidY - y) : y;
+  if (!isInsidePitch(canonicalX, canonicalY)) return;
+  _arrowDrawing = true;
+  _arrowStart = { displayX: x, displayY: y, canonicalX, canonicalY };
+  _arrowPreviewEnd = { displayX: x, displayY: y };
+});
+
+canvas.addEventListener('mouseup', (event) => {
+  if (!_arrowDrawing) return;
+  _arrowDrawing = false;
+  if (!_arrowStart) { _arrowStart = null; _arrowPreviewEnd = null; return; }
+  const { x, y } = getCanvasCoordinates(event);
+  const pitchMidX = pitch.x + pitch.width / 2;
+  const pitchMidY = pitch.y + pitch.height / 2;
+  const canonicalX = isMirrored ? (2 * pitchMidX - x) : x;
+  const canonicalY = isMirrored ? (2 * pitchMidY - y) : y;
+  const dx = x - _arrowStart.displayX;
+  const dy = y - _arrowStart.displayY;
+  if (Math.sqrt(dx * dx + dy * dy) > 5) {
+    shots[assistModeIndex].assistArrow = {
+      x1: _arrowStart.canonicalX, y1: _arrowStart.canonicalY,
+      x2: canonicalX, y2: canonicalY,
+    };
+  }
+  _arrowStart = null;
+  _arrowPreviewEnd = null;
+  drawPitch();
+});
+
 clearBtn.addEventListener('click', () => {
+  cancelAssistMode();
   shots.length = 0;
   hoveredShotIndex = null;
   drawPitch();
@@ -553,6 +734,20 @@ videoFragmentsCount.addEventListener('change', () => {
   renderShotsList();
 });
 
+document.getElementById('assistModeCancelBtn').addEventListener('click', cancelAssistMode);
+
+document.getElementById('assistModePersonBtn').addEventListener('click', () => {
+  assistSubMode = 'person';
+  document.getElementById('assistModePersonBtn').classList.add('selected');
+  document.getElementById('assistModeArrowBtn').classList.remove('selected');
+});
+
+document.getElementById('assistModeArrowBtn').addEventListener('click', () => {
+  assistSubMode = 'arrow';
+  document.getElementById('assistModeArrowBtn').classList.add('selected');
+  document.getElementById('assistModePersonBtn').classList.remove('selected');
+});
+
 teamFilter.addEventListener('change', (event) => {
   activeTeamFilter = event.target.value;
   hoveredShotIndex = null;
@@ -561,10 +756,27 @@ teamFilter.addEventListener('change', (event) => {
 });
 
 shotList.addEventListener('click', (event) => {
+  const passerEditBtn = event.target.closest('.shot-passer-edit-btn');
+  if (passerEditBtn) {
+    const shotItem = passerEditBtn.closest('.shot-item');
+    const index = Number(shotItem.dataset.index);
+    if (assistModeIndex === index) {
+      cancelAssistMode();
+    } else {
+      enterAssistMode(index);
+    }
+    return;
+  }
+
   const deleteButton = event.target.closest('.delete-shot-btn');
   if (!deleteButton) return;
 
   const index = Number(deleteButton.dataset.index);
+  if (assistModeIndex === index) {
+    cancelAssistMode();
+  } else if (assistModeIndex !== null && assistModeIndex > index) {
+    assistModeIndex -= 1;
+  }
   shots.splice(index, 1);
 
   if (hoveredShotIndex === index) {
@@ -630,6 +842,13 @@ shotList.addEventListener('input', (event) => {
 });
 
 canvas.addEventListener('mousemove', (event) => {
+  // Arrow preview while dragging in assist mode
+  if (assistModeIndex !== null && assistSubMode === 'arrow' && _arrowDrawing) {
+    const { x, y } = getCanvasCoordinates(event);
+    _arrowPreviewEnd = { displayX: x, displayY: y };
+    drawPitch();
+    return;
+  }
   if (!isReadMode) return;
   const { x, y } = getCanvasCoordinates(event);
   const pitchMidX = pitch.x + pitch.width / 2;
@@ -649,6 +868,12 @@ canvas.addEventListener('mousemove', (event) => {
 });
 
 canvas.addEventListener('mouseleave', () => {
+  if (_arrowDrawing) {
+    _arrowDrawing = false;
+    _arrowStart = null;
+    _arrowPreviewEnd = null;
+    drawPitch();
+  }
   if (!isReadMode) return;
   if (hoveredShotIndex !== null) {
     hoveredShotIndex = null;
@@ -742,6 +967,13 @@ function importFromCsv(text) {
       passerNumber: row.passerNumber || '',
       xg: row.xg || '',
       videoFragment: row.videoFragment || '',
+      assistPos: row.assistPosX !== '' && !isNaN(parseFloat(row.assistPosX))
+        ? { x: parseFloat(row.assistPosX), y: parseFloat(row.assistPosY) }
+        : null,
+      assistArrow: row.assistArrowX1 !== '' && !isNaN(parseFloat(row.assistArrowX1))
+        ? { x1: parseFloat(row.assistArrowX1), y1: parseFloat(row.assistArrowY1),
+            x2: parseFloat(row.assistArrowX2), y2: parseFloat(row.assistArrowY2) }
+        : null,
       team: row.team === 'opponent' ? 'opponent' : 'ourTeam',
     });
   }

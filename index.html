@@ -1030,6 +1030,117 @@
         color: #111827;
       }
 
+      .shot-field-input-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .shot-field-input-row input {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .shot-passer-edit-btn {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        background: #111827;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+      }
+
+      .shot-passer-edit-btn:hover {
+        background: #374151;
+      }
+
+      .shot-passer-edit-btn.assist-active {
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .shot-passer-edit-btn.assist-active:hover {
+        background: #1d4ed8;
+      }
+
+      /* Assist mode bar */
+      #assistModeBar {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+      }
+
+      .assist-mode-bar-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        background: #374151;
+        color: #fff;
+        transition: background 0.15s;
+      }
+
+      .assist-mode-bar-btn:hover {
+        background: #4b5563;
+      }
+
+      .assist-mode-bar-btn.selected {
+        background: #2563eb;
+      }
+
+      .assist-mode-bar-btn.selected:hover {
+        background: #1d4ed8;
+      }
+
+      .assist-mode-bar-btn.cancel-btn {
+        background: #dc2626;
+      }
+
+      .assist-mode-bar-btn.cancel-btn:hover {
+        background: #b91c1c;
+      }
+
+      /* Toast */
+      #assistToast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #111827;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        z-index: 9999;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        opacity: 0;
+        transform: translateY(8px);
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #assistToast.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
       .shot-team {
         display: flex;
         gap: 12px;
@@ -1235,6 +1346,32 @@
                   <option value="opponent">Przeciwnik</option>
                 </select>
               </div>
+              <div id="assistModeBar">
+                <button
+                  type="button"
+                  class="assist-mode-bar-btn"
+                  id="assistModePersonBtn"
+                  title="Zaznacz asystującego"
+                >
+                  <i class="bi bi-person-fill"></i>
+                </button>
+                <button
+                  type="button"
+                  class="assist-mode-bar-btn"
+                  id="assistModeArrowBtn"
+                  title="Narysuj podanie"
+                >
+                  <i class="bi bi-arrow-right"></i>
+                </button>
+                <button
+                  type="button"
+                  class="assist-mode-bar-btn cancel-btn"
+                  id="assistModeCancelBtn"
+                  title="Anuluj tryb rysowania asysty"
+                >
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
             </div>
             <canvas id="pitchCanvas" width="800" height="470"></canvas>
             <div class="toolbar">
@@ -1343,6 +1480,7 @@
                   <tr>
                     <th class="cmp-check-col"></th>
                     <th class="num">Nr</th>
+                    <th>Imię i nazwisko</th>
                     <th class="num" style="text-transform: none">xG</th>
                     <th class="num" style="text-transform: none">xA</th>
                     <th class="num">Cel.</th>
@@ -1522,6 +1660,9 @@
       </div>
     </div>
 
+    <div id="assistToast">
+      <i class="bi bi-pencil"></i> <span id="assistToastMsg"></span>
+    </div>
     <script src="app.js" defer></script>
     <script src="stats.js" defer></script>
     <script src="players.js" defer></script>

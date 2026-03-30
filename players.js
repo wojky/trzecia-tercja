@@ -51,7 +51,7 @@ function renderPlayers() {
 
   const tbody = document.getElementById('playersTableBody');
   if (rows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">Brak uderzeń naszego zespołu z podanym numerem zawodnika.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">Brak uderzeń naszego zespołu z podanym numerem zawodnika.</td></tr>';
     document.getElementById('collabSection').style.display = 'none';
     document.getElementById('compareSection').style.display = 'none';
     return;
@@ -72,6 +72,7 @@ function renderPlayers() {
           style="accent-color:${color || '#e11d48'}" />
       </td>
       <td class="num-badge"><span class="player-num-badge">${r.num}</span></td>
+      <td class="player-name muted">—</td>
       <td class="num">${r.xg > 0 ? r.xg.toFixed(2) : '<span class="muted">—</span>'}</td>
       <td class="num">${r.xa > 0 ? r.xa.toFixed(2) : '<span class="muted">—</span>'}</td>
       <td class="num">${r.celne  || '<span class="muted">—</span>'}</td>
@@ -198,7 +199,9 @@ function openPlayerDialog(num) {
         <canvas id="pdgPitchCanvas" width="400" height="235"></canvas>
         <div class="pdg-map-legend">
           <span class="pdg-legend-dot" style="background:#e11d48"></span> Strzał
-          ${asPasser.length > 0 ? '<span class="pdg-legend-dot" style="background:none;border:2px solid #f59e0b;box-shadow:none"></span> Asysta' : ''}
+          ${asPasser.length > 0 ? '<span class="pdg-legend-dot" style="background:none;border:2px solid #f59e0b;box-shadow:none"></span> Cel asysty' : ''}
+          ${asPasser.some(s => s.assistPos) ? '<span class="pdg-legend-dot" style="background:rgba(251,191,36,0.9);box-shadow:none"></span> Pozycja asystującego' : ''}
+          ${asPasser.some(s => s.assistArrow) ? '<span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#6b7280"><span style="display:inline-block;width:18px;height:2px;background:#fbbf24;vertical-align:middle"></span> Podanie</span>' : ''}
           ${asShooter.some(s => (s.status||[]).includes('gol')) ? '<span class="pdg-legend-dot" style="background:#e11d48;box-shadow:0 0 0 2px #fbbf24"></span> Gol' : ''}
         </div>
       </div>
@@ -322,6 +325,8 @@ function _drawPlayerPitch(canvasEl, asShooter, asPasser) {
   // Draw assists first (underneath shots)
   asPasser.forEach((s, i) => {
     const { x, y } = toCanvas(s);
+
+    // ── Shot destination: amber ring ──────────────────────────────────────
     c.beginPath();
     c.arc(x, y, r + 1, 0, Math.PI * 2);
     c.strokeStyle = '#f59e0b';
@@ -329,12 +334,61 @@ function _drawPlayerPitch(canvasEl, asShooter, asPasser) {
     c.fillStyle = 'rgba(245, 158, 11, 0.18)';
     c.fill();
     c.stroke();
-    // label "A"
     c.fillStyle = '#f59e0b';
     c.font = `bold ${fs}px Arial`;
     c.textAlign = 'center';
     c.textBaseline = 'middle';
     c.fillText('A', x, y + 0.5);
+
+    // ── assistPos: where the passer stood (filled amber dot) ─────────────
+    if (s.assistPos) {
+      const px = (isMirrored ? 2 * origMidX - s.assistPos.x : s.assistPos.x) * S;
+      const py = (isMirrored ? 2 * origMidY - s.assistPos.y : s.assistPos.y) * S;
+
+      c.beginPath();
+      c.arc(px, py, r + 1, 0, Math.PI * 2);
+      c.fillStyle = 'rgba(251,191,36,0.9)';
+      c.fill();
+      c.strokeStyle = '#fff';
+      c.lineWidth = Math.max(1, 1.5 * S);
+      c.stroke();
+      c.fillStyle = '#111827';
+      c.font = `bold ${fs}px Arial`;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText('P', px, py + 0.5);
+    }
+
+    // ── assistArrow: pass trajectory ──────────────────────────────────────
+    if (s.assistArrow) {
+      const ax1 = (isMirrored ? 2 * origMidX - s.assistArrow.x1 : s.assistArrow.x1) * S;
+      const ay1 = (isMirrored ? 2 * origMidY - s.assistArrow.y1 : s.assistArrow.y1) * S;
+      const ax2 = (isMirrored ? 2 * origMidX - s.assistArrow.x2 : s.assistArrow.x2) * S;
+      const ay2 = (isMirrored ? 2 * origMidY - s.assistArrow.y2 : s.assistArrow.y2) * S;
+
+      const dx = ax2 - ax1, dy = ay2 - ay1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len > 3) {
+        c.save();
+        c.strokeStyle = '#fbbf24';
+        c.fillStyle   = '#fbbf24';
+        c.lineWidth = Math.max(1.5, 2.5 * S);
+        c.beginPath();
+        c.moveTo(ax1, ay1);
+        c.lineTo(ax2, ay2);
+        c.stroke();
+        const angle = Math.atan2(dy, dx);
+        const headLen = Math.max(7, 12 * S);
+        const headAngle = Math.PI / 7;
+        c.beginPath();
+        c.moveTo(ax2, ay2);
+        c.lineTo(ax2 - headLen * Math.cos(angle - headAngle), ay2 - headLen * Math.sin(angle - headAngle));
+        c.lineTo(ax2 - headLen * Math.cos(angle + headAngle), ay2 - headLen * Math.sin(angle + headAngle));
+        c.closePath();
+        c.fill();
+        c.restore();
+      }
+    }
   });
 
   // Draw shooter shots on top
