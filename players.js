@@ -57,9 +57,20 @@ function renderPlayers() {
     return;
   }
 
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td class="muted">—</td>
+  tbody.innerHTML = rows.map(r => {
+    const selIdx = _compareSelection.indexOf(r.num);
+    const checked = selIdx !== -1;
+    const color = checked ? CMP_COLORS[selIdx] : '';
+    const disabled = !checked && _compareSelection.length >= 3;
+    return `
+    <tr class="${checked ? 'cmp-row-selected' : ''}">
+      <td class="cmp-check-col">
+        <input type="checkbox" class="cmp-checkbox" data-num="${r.num}"
+          ${checked ? 'checked' : ''}
+          ${disabled ? 'disabled' : ''}
+          onchange="toggleCompare('${r.num}')"
+          style="accent-color:${color || '#e11d48'}" />
+      </td>
       <td class="num-badge"><span class="player-num-badge">${r.num}</span></td>
       <td class="num">${r.xg > 0 ? r.xg.toFixed(2) : '<span class="muted">—</span>'}</td>
       <td class="num">${r.xa > 0 ? r.xa.toFixed(2) : '<span class="muted">—</span>'}</td>
@@ -69,7 +80,8 @@ function renderPlayers() {
       <td class="num muted">—</td>
       <td><button class="btn-player-details" onclick="openPlayerDialog('${r.num}')" title="Szczegóły zawodnika"><i class="bi bi-search"></i></button></td>
     </tr>
-  `).join('');
+    `;
+  }).join('');
 
   // ─── Macierz współpracy ───────────────────────────────────────────────────
   const collabSection = document.getElementById('collabSection');
@@ -109,7 +121,7 @@ function renderPlayers() {
   // ─── Sekcja porównania ────────────────────────────────────────────────────
   if (rows.length >= 2) {
     document.getElementById('compareSection').style.display = 'block';
-    _renderComparePicker();
+
     _renderCompareViz();
   } else {
     document.getElementById('compareSection').style.display = 'none';
@@ -120,7 +132,7 @@ function renderPlayers() {
 
 function openPlayerDialog(num) {
   const st = _playerStats(num);
-  const { xg, xa, shots_, celne, niecel, zablok, gole, asysty, asShooter } = st;
+  const { xg, xa, shots_, celne, niecel, zablok, gole, asysty, asShooter, asPasser } = st;
 
   const xgPerShot  = shots_ > 0 ? xg / shots_ : null;
   const xaPerPass  = asysty > 0 ? xa / asysty : null;
@@ -179,14 +191,32 @@ function openPlayerDialog(num) {
       ${kv('Niecelne', niecel || '—', false)}
       ${kv('Zablokowane', zablok || '—', false)}
     </div>
-    ${asShooter.length > 0 ? `
-    <div class="pdg-section-title">Strzały (${asShooter.length})</div>
-    <ul class="pdg-shot-list">${shotRows}</ul>` : ''}
+    ${(asShooter.length > 0 || asPasser.length > 0) ? `
+    <div class="pdg-section-title">Mapa uderzeń</div>
+    <div class="pdg-map-row">
+      <div class="pdg-map-col">
+        <canvas id="pdgPitchCanvas" width="400" height="235"></canvas>
+        <div class="pdg-map-legend">
+          <span class="pdg-legend-dot" style="background:#e11d48"></span> Strzał
+          ${asPasser.length > 0 ? '<span class="pdg-legend-dot" style="background:none;border:2px solid #f59e0b;box-shadow:none"></span> Asysta' : ''}
+          ${asShooter.some(s => (s.status||[]).includes('gol')) ? '<span class="pdg-legend-dot" style="background:#e11d48;box-shadow:0 0 0 2px #fbbf24"></span> Gol' : ''}
+        </div>
+      </div>
+      ${asShooter.length > 0 ? `
+      <div class="pdg-shots-col">
+        <div class="pdg-section-title" style="margin-top:0">Lista strzałów</div>
+        <ul class="pdg-shot-list">${shotRows}</ul>
+      </div>` : ''}
+    </div>` : ''}
   `;
 
   const dlg = document.getElementById('playerDialog');
   document.getElementById('pdgClose').onclick = () => dlg.close();
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); }, { once: true });
+
+  // Draw player pitch map
+  const pitchCanvas = document.getElementById('pdgPitchCanvas');
+  if (pitchCanvas) _drawPlayerPitch(pitchCanvas, asShooter, asPasser);
 
   let tip = dlg.querySelector('#pdg-tooltip');
   if (!tip) {
@@ -215,6 +245,126 @@ function openPlayerDialog(num) {
   });
 
   dlg.showModal();
+}
+
+// ─── Mini mapa boiska w dialogu ────────────────────────────────────────────────
+
+function _drawPlayerPitch(canvasEl, asShooter, asPasser) {
+  // Scale from main canvas (800×470) to this canvas
+  const S  = canvasEl.width / 800;
+  const c  = canvasEl.getContext('2d');
+  const p  = { x: 40 * S, y: 20 * S, width: 720 * S, height: 370 * S };
+  const sx = p.width  / 68;
+  const sy = p.height / 35;
+
+  // Background
+  c.fillStyle = '#2d8f45';
+  c.fillRect(0, 0, canvasEl.width, canvasEl.height);
+
+  c.save();
+  if (isMirrored) {
+    const mx = p.x + p.width / 2, my = p.y + p.height / 2;
+    c.translate(2 * mx, 2 * my);
+    c.scale(-1, -1);
+  }
+
+  // Pitch surface
+  c.fillStyle = '#339c50';
+  c.fillRect(p.x, p.y, p.width, p.height);
+
+  c.strokeStyle = '#ffffff';
+  c.lineWidth = Math.max(1, 3 * S);
+
+  // Outer lines
+  c.strokeRect(p.x, p.y, p.width, p.height);
+
+  // Penalty area
+  const paW = 40.32 * sx, paD = 16.5 * sy;
+  const paX = p.x + (p.width - paW) / 2;
+  c.strokeRect(paX, p.y, paW, paD);
+
+  // Goal area
+  const gaW = 18.32 * sx, gaD = 5.5 * sy;
+  const gaX = p.x + (p.width - gaW) / 2;
+  c.strokeRect(gaX, p.y, gaW, gaD);
+
+  // Goal
+  const gW = 7.32 * sx, gD = 2.2 * sy;
+  const gX = p.x + (p.width - gW) / 2;
+  c.strokeRect(gX, p.y - gD, gW, gD);
+
+  // Penalty spot
+  const psX = p.x + p.width / 2, psY = p.y + 11 * sy;
+  c.beginPath();
+  c.arc(psX, psY, Math.max(1, 3 * S), 0, Math.PI * 2);
+  c.fillStyle = '#ffffff';
+  c.fill();
+
+  // Penalty arc
+  c.beginPath();
+  c.arc(psX, psY, 9.15 * sy, 0.23 * Math.PI, 0.77 * Math.PI, false);
+  c.stroke();
+
+  c.restore();
+
+  // ── Shots ────────────────────────────────────────────────────────────────
+  const origMidX = 400; // pitch.x + pitch.width/2 in original coords
+  const origMidY = 205; // pitch.y + pitch.height/2
+
+  const toCanvas = s => ({
+    x: (isMirrored ? 2 * origMidX - s.x : s.x) * S,
+    y: (isMirrored ? 2 * origMidY - s.y : s.y) * S,
+  });
+
+  const r = Math.max(3, 5 * S);
+  const fs = Math.max(5, 5.5 * S);
+
+  // Draw assists first (underneath shots)
+  asPasser.forEach((s, i) => {
+    const { x, y } = toCanvas(s);
+    c.beginPath();
+    c.arc(x, y, r + 1, 0, Math.PI * 2);
+    c.strokeStyle = '#f59e0b';
+    c.lineWidth = Math.max(1.5, 2 * S);
+    c.fillStyle = 'rgba(245, 158, 11, 0.18)';
+    c.fill();
+    c.stroke();
+    // label "A"
+    c.fillStyle = '#f59e0b';
+    c.font = `bold ${fs}px Arial`;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText('A', x, y + 0.5);
+  });
+
+  // Draw shooter shots on top
+  asShooter.forEach((s, i) => {
+    const { x, y } = toCanvas(s);
+    const isGoal = (s.status || []).includes('gol');
+    const shotR  = isGoal ? r + 2 : r;
+
+    if (isGoal) {
+      // golden halo for goals
+      c.beginPath();
+      c.arc(x, y, shotR + 3, 0, Math.PI * 2);
+      c.fillStyle = 'rgba(251, 191, 36, 0.35)';
+      c.fill();
+    }
+
+    c.beginPath();
+    c.arc(x, y, shotR, 0, Math.PI * 2);
+    c.fillStyle = '#e11d48';
+    c.fill();
+    c.lineWidth = Math.max(1, 1.5 * S);
+    c.strokeStyle = '#ffffff';
+    c.stroke();
+
+    c.fillStyle = '#ffffff';
+    c.font = `bold ${fs}px Arial`;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText(String(i + 1), x, y + 0.5);
+  });
 }
 
 // ─── Macierz współpracy ───────────────────────────────────────────────────────
@@ -253,24 +403,27 @@ function toggleCompare(num) {
     if (_compareSelection.length >= 3) return; // max 3
     _compareSelection.push(num);
   }
-  _renderComparePicker();
+  // Sync all checkboxes in the table to reflect new selection state
+  document.querySelectorAll('.cmp-checkbox').forEach(cb => {
+    const n = cb.dataset.num;
+    const selIdx = _compareSelection.indexOf(n);
+    cb.checked = selIdx !== -1;
+    cb.style.accentColor = selIdx !== -1 ? CMP_COLORS[selIdx] : '#e11d48';
+    cb.disabled = !cb.checked && _compareSelection.length >= 3;
+  });
+  // Sync row highlight
+  document.querySelectorAll('#playersTableBody tr').forEach(tr => {
+    const cb = tr.querySelector('.cmp-checkbox');
+    if (cb) tr.classList.toggle('cmp-row-selected', cb.checked);
+  });
+  document.getElementById('compareHint').style.display =
+    _compareSelection.length < 2 ? 'block' : 'none';
   _renderCompareViz();
 }
 
 function _renderComparePicker() {
-  const picker = document.getElementById('comparePicker');
-  picker.innerHTML = _allPlayerRows.map(r => {
-    const selIdx = _compareSelection.indexOf(r.num);
-    const selected = selIdx !== -1;
-    const color = selected ? CMP_COLORS[selIdx] : null;
-    const disabled = !selected && _compareSelection.length >= 3;
-    return `<button
-      class="cmp-pill${selected ? ' cmp-pill-active' : ''}"
-      style="${color ? `--cmp-color:${color};border-color:${color};background:${color}18;color:${color}` : ''}"
-      onclick="toggleCompare('${r.num}')"
-      ${disabled ? 'disabled title="Możesz wybrać maksymalnie 3 zawodników"' : ''}
-    >${r.num}</button>`;
-  }).join('');
+  // No separate picker UI — checkboxes are in the table rows.
+  // Just sync hint visibility.
   document.getElementById('compareHint').style.display =
     _compareSelection.length < 2 ? 'block' : 'none';
 }

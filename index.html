@@ -391,6 +391,51 @@
         margin-bottom: 20px;
       }
 
+      #pdgPitchCanvas {
+        background: #2d8f45;
+        border-radius: 8px;
+        cursor: default;
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .pdg-map-row {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .pdg-map-col {
+        flex: 0 0 400px;
+        max-width: 400px;
+        min-width: 240px;
+      }
+
+      .pdg-map-legend {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+        font-size: 11px;
+        color: #6b7280;
+        font-weight: 600;
+      }
+
+      .pdg-legend-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .pdg-shots-col {
+        flex: 1 1 200px;
+        min-width: 160px;
+      }
+
       .players-table-wrap {
         overflow-x: auto;
         margin-top: 8px;
@@ -461,7 +506,7 @@
         border: none;
         border-radius: 14px;
         padding: 0;
-        width: min(540px, 96vw);
+        width: min(860px, 96vw);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
         background: #fff;
       }
@@ -712,6 +757,25 @@
       }
 
       /* ─── Player comparison ─────────────────────────────────────────────── */
+
+      .cmp-check-col {
+        width: 36px;
+        text-align: center;
+        padding: 0 4px !important;
+      }
+
+      .cmp-checkbox {
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        margin: 0;
+        display: block;
+        margin: 0 auto;
+      }
+
+      #playersTableBody tr.cmp-row-selected {
+        background: rgba(225, 29, 72, 0.05);
+      }
 
       .cmp-picker {
         display: flex;
@@ -1277,7 +1341,7 @@
               <table class="players-table" id="playersTable">
                 <thead>
                   <tr>
-                    <th>Zawodnik</th>
+                    <th class="cmp-check-col"></th>
                     <th class="num">Nr</th>
                     <th class="num" style="text-transform: none">xG</th>
                     <th class="num" style="text-transform: none">xA</th>
@@ -1291,6 +1355,34 @@
                 <tbody id="playersTableBody"></tbody>
               </table>
             </div>
+            <!-- ─── Porównanie zawodników ────────────────────────────── -->
+            <div id="compareSection" style="display: none; margin-top: 28px">
+              <div class="stats-chart-title">Porównanie zawodników</div>
+              <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
+                Zaznacz od 2 do 3 zawodników w tabeli, aby zobaczyć ich
+                porównanie na wykresie radarowym oraz w tabeli.
+                <strong>Podświetlona</strong> komórka w tabeli oznacza najlepszy
+                wynik w danej kategorii.
+              </p>
+              <p
+                id="compareHint"
+                style="font-size: 12px; color: #9ca3af; margin: 8px 0 0"
+              >
+                Zaznacz co najmniej 2 zawodników, aby wyświetlić porównanie.
+              </p>
+              <div
+                id="compareChartWrap"
+                style="display: none; margin-top: 20px"
+              >
+                <div class="cmp-side-by-side">
+                  <div class="cmp-radar-wrap">
+                    <canvas id="compareRadarChart"></canvas>
+                  </div>
+                  <div id="compareTable" class="cmp-table-wrap"></div>
+                </div>
+              </div>
+            </div>
+
             <div id="collabSection" style="display: none; margin-top: 28px">
               <div class="stats-chart-title">Współpraca zawodników</div>
               <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
@@ -1359,36 +1451,8 @@
                 <div id="collabMatrix"></div>
               </div>
             </div>
-
-            <!-- ─── Porównanie zawodników ─────────────────────────────── -->
-            <div id="compareSection" style="display: none; margin-top: 28px">
-              <div class="stats-chart-title">Porównanie zawodników</div>
-              <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
-                Wybierz od 2 do 3 zawodników, aby zobaczyć ich porównanie na
-                wykresie radarowym oraz w tabeli.
-                <strong>Podświetlona</strong> komórka w tabeli oznacza najlepszy
-                wynik w danej kategorii.
-              </p>
-              <div id="comparePicker" class="cmp-picker"></div>
-              <p
-                id="compareHint"
-                style="font-size: 12px; color: #9ca3af; margin: 8px 0 0"
-              >
-                Zaznacz co najmniej 2 zawodników, aby wyświetlić porównanie.
-              </p>
-              <div
-                id="compareChartWrap"
-                style="display: none; margin-top: 20px"
-              >
-                <div class="cmp-side-by-side">
-                  <div class="cmp-radar-wrap">
-                    <canvas id="compareRadarChart"></canvas>
-                  </div>
-                  <div id="compareTable" class="cmp-table-wrap"></div>
-                </div>
-              </div>
-            </div>
           </div>
+          <!-- /#playersPanel -->
 
           <div id="simPanel" class="stats-panel">
             <div id="sim-empty" class="sim-empty" style="display: none">
