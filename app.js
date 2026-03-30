@@ -318,7 +318,7 @@ function renderShotsList() {
           </label>
         </div>
         <div class="shot-actions">
-          <select data-index="${index}" class="shot-status-select" multiple>
+          <select data-index="${index}" class="shot-status-select" multiple size="12">
             <option value="gol" ${shot.status.includes('gol') ? 'selected' : ''}>GOL</option>
             <option value="zablokowany" ${shot.status.includes('zablokowany') ? 'selected' : ''}>Zablokowany</option>
             <option value="niecelny" ${shot.status.includes('niecelny') ? 'selected' : ''}>Niecelny</option>
@@ -330,6 +330,7 @@ function renderShotsList() {
             <option value="rzut-karny" ${shot.status.includes('rzut-karny') ? 'selected' : ''}>Rzut karny</option>
             <option value="interwencja-bramkarza" ${shot.status.includes('interwencja-bramkarza') ? 'selected' : ''}>Interwencja bramkarza</option>
             <option value="po-bledzie-indywidualnym" ${shot.status.includes('po-bledzie-indywidualnym') ? 'selected' : ''}>Po błędzie indywidualnym</option>
+            <option value="sfg-strzal" ${shot.status.includes('sfg-strzal') ? 'selected' : ''}>SFG strzał</option>
           </select>
           <button type="button" class="delete-shot-btn" data-index="${index}" title="Usuń"><i class="bi bi-trash3-fill"></i></button>
         </div>

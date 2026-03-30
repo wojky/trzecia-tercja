@@ -230,6 +230,118 @@
         margin-bottom: 10px;
       }
 
+      /* ── Symulacja ── */
+      .sim-result-bar-wrap {
+        display: flex;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 56px;
+        margin-bottom: 18px;
+        font-family: Arial, sans-serif;
+      }
+
+      .sim-result-segment {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: width 0.4s ease;
+        overflow: hidden;
+        min-width: 0;
+      }
+
+      .sim-result-segment span {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.85;
+      }
+
+      .sim-result-segment strong {
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .sim-seg-win {
+        background: #e11d48;
+        color: #fff;
+      }
+      .sim-seg-draw {
+        background: #6b7280;
+        color: #fff;
+      }
+      .sim-seg-loss {
+        background: #2563eb;
+        color: #fff;
+      }
+
+      .sim-empty {
+        padding: 24px;
+        text-align: center;
+        color: #9ca3af;
+        font-size: 14px;
+      }
+
+      .shot-dist-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 20px;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border-radius: 8px;
+      }
+
+      .shot-dist-legend-group {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .shot-dist-legend-sep {
+        width: 1px;
+        height: 18px;
+        background: #d1d5db;
+        align-self: center;
+      }
+
+      .shot-dist-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #374151;
+        white-space: nowrap;
+      }
+
+      .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .legend-dot-empty {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid;
+        flex-shrink: 0;
+        background: transparent;
+      }
+
+      .legend-dot-half {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1.5px solid;
+        flex-shrink: 0;
+      }
+
       .layout {
         display: grid;
         grid-template-columns: 4fr 2fr;
@@ -257,6 +369,21 @@
         background: #f8fafc;
         border-radius: 10px;
         cursor: default;
+      }
+
+      #shotDistributionChart {
+        background: #f8fafc;
+        border-radius: 10px;
+        cursor: default;
+        margin-bottom: 20px;
+      }
+
+      #goalDistChart,
+      #goalDiffChart {
+        background: #f8fafc;
+        border-radius: 10px;
+        cursor: default;
+        margin-bottom: 20px;
       }
 
       .filters-panel {
@@ -602,6 +729,9 @@
             <button class="card-tab" id="tabStats" type="button">
               <i class="bi bi-bar-chart-line"></i> Statystyki
             </button>
+            <button class="card-tab" id="tabSim" type="button">
+              <i class="bi bi-lightning-charge"></i> Symulacja
+            </button>
           </div>
           <div id="mapPanel">
             <div class="filters-panel">
@@ -702,10 +832,73 @@
                 </div>
               </div>
             </div>
+            <div class="stats-chart-title">Rozkład uderzeń w czasie</div>
+            <div id="shotDistLegend" class="shot-dist-legend"></div>
+            <canvas
+              id="shotDistributionChart"
+              style="max-height: 220px"
+            ></canvas>
             <div class="stats-chart-title">
               Kumulatywne xG na osi czasu meczu
             </div>
             <canvas id="xgTimelineChart" style="max-height: 260px"></canvas>
+          </div>
+
+          <div id="simPanel" class="stats-panel">
+            <div id="sim-empty" class="sim-empty" style="display: none">
+              Brak uderzeń z wartościami xG &mdash; dodaj uderzenia, aby
+              uruchomić symulację.
+            </div>
+            <div id="sim-content">
+              <div class="sim-result-bar-wrap">
+                <div class="sim-result-segment sim-seg-win" id="sim-win-bar">
+                  <span>Wygrana</span><strong id="sim-win-pct">-</strong>
+                </div>
+                <div class="sim-result-segment sim-seg-draw" id="sim-draw-bar">
+                  <span>Remis</span><strong id="sim-draw-pct">-</strong>
+                </div>
+                <div class="sim-result-segment sim-seg-loss" id="sim-loss-bar">
+                  <span>Porażka</span><strong id="sim-loss-pct">-</strong>
+                </div>
+              </div>
+              <div class="stats-summary">
+                <div class="stats-team-block our">
+                  <div class="stats-team-title">Nasz zespół</div>
+                  <div class="stats-row">
+                    <span>Oczekiwane gole</span
+                    ><strong id="sim-our-xg">-</strong>
+                  </div>
+                  <div class="stats-row">
+                    <span>Odch. std.</span><strong id="sim-our-std">-</strong>
+                  </div>
+                  <div class="stats-row">
+                    <span>Pkt / mecz</span><strong id="sim-our-ppg">-</strong>
+                  </div>
+                </div>
+                <div class="stats-team-block opp">
+                  <div class="stats-team-title">Przeciwnik</div>
+                  <div class="stats-row">
+                    <span>Oczekiwane gole</span
+                    ><strong id="sim-opp-xg">-</strong>
+                  </div>
+                  <div class="stats-row">
+                    <span>Odch. std.</span><strong id="sim-opp-std">-</strong>
+                  </div>
+                  <div class="stats-row">
+                    <span>Pkt / mecz</span><strong id="sim-opp-ppg">-</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="stats-chart-title">
+                Rozkład prawdopodobieństwa liczby goli
+              </div>
+              <canvas
+                id="goalDistChart"
+                style="max-height: 220px; margin-bottom: 20px"
+              ></canvas>
+              <div class="stats-chart-title">Rozkład różnicy bramek</div>
+              <canvas id="goalDiffChart" style="max-height: 180px"></canvas>
+            </div>
           </div>
         </div>
 
@@ -721,5 +914,6 @@
 
     <script src="app.js" defer></script>
     <script src="stats.js" defer></script>
+    <script src="simulation.js" defer></script>
   </body>
 </html>
