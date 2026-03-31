@@ -121,8 +121,15 @@ function drawPitch() {
     ctx.scale(-1, -1);
   }
 
-  ctx.fillStyle = '#339c50';
-  ctx.fillRect(pitch.x, pitch.y, pitch.width, pitch.height);
+  // Stripes anchored to key lines: 0, 5.5, 11, 16.5, 22, 28.5, 35m
+  const stripesM = [0, 5.5, 11, 16.5, 22, 28.5, 35];
+  const stripeColors = ['#2e9148', '#39a856'];
+  for (let s = 0; s < stripesM.length - 1; s++) {
+    const sy = pitch.y + stripesM[s] * scaleY;
+    const sh = (stripesM[s + 1] - stripesM[s]) * scaleY;
+    ctx.fillStyle = stripeColors[s % 2];
+    ctx.fillRect(pitch.x, sy, pitch.width, sh);
+  }
 
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 3;
