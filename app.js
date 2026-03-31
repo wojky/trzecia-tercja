@@ -6,6 +6,26 @@ const exportBtn = document.getElementById('exportBtn');
 const counter = document.getElementById('counter');
 const teamFilter = document.getElementById('teamFilter');
 
+// ─── Sidebar toggle ─────────────────────────────────────────
+const _sidebar = document.getElementById('sidebar');
+const _shell = document.querySelector('.app-shell');
+
+function _updateSidebarState() {
+  const isCollapsed = _sidebar.classList.contains('collapsed');
+  _shell.classList.toggle('sidebar-collapsed', isCollapsed);
+}
+
+document.getElementById('sidebarToggleBtn').addEventListener('click', () => {
+  _sidebar.classList.remove('collapsed');
+  _updateSidebarState();
+});
+document.getElementById('sidebarCollapseBtn').addEventListener('click', () => {
+  _sidebar.classList.add('collapsed');
+  _updateSidebarState();
+});
+
+_updateSidebarState();
+
 const shots = [];
 let hoveredShotIndex = null;
 let hoveredFromList = false;

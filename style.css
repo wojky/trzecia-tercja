@@ -2,20 +2,266 @@
   box-sizing: border-box;
 }
 
-html {
-  overflow-y: scroll;
-}
+html,
 body {
+  height: 100%;
+  overflow: hidden;
   margin: 0;
+}
+
+body {
   font-family: Arial, sans-serif;
   background: #f5f7fa;
   color: #1f2937;
 }
 
-.app {
-  max-width: 1200px;
-  margin: 24px auto;
+/* ─── Shell layout ──────────────────────────────────────── */
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────── */
+.sidebar {
+  width: 260px;
+  background: #111827;
+  color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width 0.22s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 0;
+}
+
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 57px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.sidebar-collapse-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 7px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+
+.sidebar-collapse-btn:hover {
+  color: #f9fafb;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.sidebar-nav {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #d1d5db;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f9fafb;
+}
+
+.sidebar-nav-item.active {
+  background: rgba(255, 255, 255, 0.11);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.sidebar-nav-item i {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ─── Main area ─────────────────────────────────────────── */
+.main-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── Topbar ────────────────────────────────────────────── */
+.topbar {
+  height: 57px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  z-index: 200;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-menu-btn {
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 8px;
+  line-height: 1;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.topbar-menu-btn:hover {
+  background: #f3f4f6;
+}
+
+/* Hide hamburger when sidebar is open; show it only when collapsed */
+.app-shell:not(.sidebar-collapsed) .topbar-menu-btn {
+  display: none;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.topbar-club-logo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.topbar-brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-divider {
+  color: #d1d5db;
+  font-size: 16px;
+  user-select: none;
+  padding: 0 2px;
+}
+
+.btn-support {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  background: #fff1f2;
+  border: 1.5px solid #fecdd3;
+  color: #e11d48;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-support:hover {
+  background: #ffe4e6;
+  border-color: #fda4af;
+}
+
+.btn-auth {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-login {
+  background: none;
+  border: 1.5px solid #e5e7eb;
+  color: #374151;
+}
+
+.btn-login:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.btn-register {
+  background: #111827;
+  border: 1.5px solid #111827;
+  color: #ffffff;
+}
+
+.btn-register:hover {
+  background: #1f2937;
+  border-color: #1f2937;
+}
+
+/* ─── Page content ──────────────────────────────────────── */
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f5f7fa;
+}
+
+.content-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* legacy — kept for any residual selector use */
+.app {
+  padding: 0;
 }
 
 h1 {
@@ -24,39 +270,6 @@ h1 {
   font-weight: 800;
   letter-spacing: -0.5px;
   color: #111827;
-}
-
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 6px;
-}
-
-.club-logo {
-  height: 48px;
-  width: auto;
-  object-fit: contain;
-}
-
-.app-logo {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-}
-
-.app-header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.app-tagline {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #e11d48;
 }
 
 .card-tabs {
