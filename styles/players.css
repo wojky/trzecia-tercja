@@ -1,0 +1,478 @@
+/* ─────────────────────────────────────────────────────────
+   players.css — players table, player detail dialog,
+                 collaboration matrix, player comparison
+   ───────────────────────────────────────────────────────── */
+
+/* ─── Players table ─────────────────────────────────────── */
+.players-table-wrap {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.players-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+}
+
+.players-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  color: #374151;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.players-table th.num,
+.players-table td.num {
+  text-align: center;
+}
+
+.players-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.players-table tr:last-child td {
+  border-bottom: none;
+}
+
+.players-table tr:hover td {
+  background: #f8fafc;
+}
+
+.players-table td.muted {
+  color: #9ca3af;
+}
+
+.players-table td.num-badge {
+  text-align: center;
+}
+
+.player-num-badge {
+  display: inline-block;
+  background: #e11d48;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: 6px;
+  padding: 1px 7px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.btn-player-details {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.btn-player-details:hover {
+  color: #e11d48;
+}
+
+/* ─── Player detail dialog ──────────────────────────────── */
+#playerDialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  width: min(860px, 96vw);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  background: #fff;
+}
+
+#playerDialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.player-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.player-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-dialog-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.player-dialog-close:hover {
+  color: #111827;
+}
+
+.player-dialog-body {
+  padding: 16px 20px 20px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+}
+
+/* ─── Player dialog — pitch map ─────────────────────────── */
+.pdg-map-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.pdg-map-col {
+  flex: 0 0 400px;
+  max-width: 400px;
+  min-width: 240px;
+}
+
+.pdg-map-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.pdg-legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pdg-shots-col {
+  flex: 1 1 200px;
+  min-width: 160px;
+}
+
+/* ─── Player dialog — KV cards ──────────────────────────── */
+.pdg-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  margin: 14px 0 6px;
+}
+
+.pdg-section-title:first-child {
+  margin-top: 0;
+}
+
+.pdg-kv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pdg-kv {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pdg-kv-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6b7280;
+}
+
+.pdg-kv-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.pdg-kv-value.accent {
+  color: #e11d48;
+}
+
+/* ─── Player dialog — shot list ─────────────────────────── */
+.pdg-shot-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.pdg-shot-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #374151;
+}
+
+.pdg-shot-min {
+  font-weight: 700;
+  min-width: 30px;
+  color: #6b7280;
+}
+
+.pdg-shot-xg {
+  font-weight: 700;
+  color: #e11d48;
+  min-width: 40px;
+}
+
+.pdg-shot-status {
+  color: #6b7280;
+}
+
+/* ─── Player dialog — info popover ──────────────────────── */
+.pdg-info-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0 0 0 3px;
+  font-size: 10px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.pdg-info-btn:hover {
+  color: #374151;
+}
+
+.pdg-popover {
+  position: fixed;
+  max-width: 280px;
+  background: #1f2937;
+  color: #f9fafb;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+/* ─── Collaboration matrix ──────────────────────────────── */
+.collab-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+}
+
+.collab-table th,
+.collab-table td {
+  width: 42px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.collab-table th {
+  background: #f1f5f9;
+  color: #374151;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 4px 6px;
+}
+
+.collab-table td {
+  color: #111827;
+}
+
+.collab-table td.collab-self {
+  background: #f1f5f9;
+}
+
+.collab-table td.collab-zero {
+  color: #d1d5db;
+}
+
+.collab-table td.collab-val {
+  font-weight: 700;
+  background: rgba(225, 29, 72, 0.08);
+  color: #e11d48;
+}
+
+.collab-mode-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.collab-mode-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  background: #f1f5f9;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  user-select: none;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.collab-mode-label:has(input:checked) {
+  background: #e11d48;
+  border-color: #e11d48;
+  color: #fff;
+}
+
+.collab-mode-label input {
+  display: none;
+}
+
+/* ─── Player comparison ─────────────────────────────────── */
+.cmp-check-col {
+  width: 36px;
+  text-align: center;
+  padding: 0 4px !important;
+}
+
+.cmp-checkbox {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  margin: 0 auto;
+  display: block;
+}
+
+#playersTableBody tr.cmp-row-selected {
+  background: rgba(225, 29, 72, 0.05);
+}
+
+.cmp-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.cmp-pill {
+  --cmp-color: #6b7280;
+  border: 2px solid #d1d5db;
+  border-radius: 20px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 14px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    opacity 0.15s;
+  min-width: 44px;
+  text-align: center;
+}
+
+.cmp-pill:hover:not(:disabled) {
+  border-color: #9ca3af;
+  background: #f1f5f9;
+}
+
+.cmp-pill:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cmp-table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.cmp-table th,
+.cmp-table td {
+  padding: 7px 12px;
+  border: 1px solid #e5e7eb;
+  text-align: right;
+}
+
+.cmp-table thead th {
+  background: #f1f5f9;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: right;
+}
+
+.cmp-table thead th:first-child {
+  text-align: left;
+}
+
+.cmp-metric-label {
+  text-align: left !important;
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cmp-best {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.cmp-side-by-side {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.cmp-radar-wrap {
+  flex: 0 0 320px;
+  max-width: 320px;
+  min-width: 240px;
+}
+
+.cmp-table-wrap {
+  flex: 1 1 220px;
+  overflow-x: auto;
+}

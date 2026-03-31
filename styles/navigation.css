@@ -1,0 +1,91 @@
+/* ─────────────────────────────────────────────────────────
+   navigation.css — card tabs, toolbar, filters panel,
+                    panel visibility toggling
+   ───────────────────────────────────────────────────────── */
+
+/* ─── Card tabs ─────────────────────────────────────────── */
+.card-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 14px;
+}
+
+.card-tab {
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  border-radius: 0;
+  box-shadow: none;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.card-tab:hover {
+  color: #111827;
+  opacity: 1;
+}
+
+.card-tab.active {
+  color: #e11d48;
+  border-bottom-color: #e11d48;
+  background: none;
+}
+
+/* Panel visibility — toggled by tab JS */
+.stats-panel {
+  display: none;
+}
+
+/* ─── Toolbar ───────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ─── Filters panel ─────────────────────────────────────── */
+.filters-panel {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.filter-field {
+  display: grid;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.filter-field label {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.filter-field select {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #111827;
+}

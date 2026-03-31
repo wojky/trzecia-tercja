@@ -1,0 +1,246 @@
+/* ─────────────────────────────────────────────────────────
+   stats.css — statistics panels, simulation, shot
+               distribution legend, chart titles
+   ───────────────────────────────────────────────────────── */
+
+/* ─── Team blocks ───────────────────────────────────────── */
+.stats-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stats-team-block {
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.stats-team-block.our {
+  border-left: 4px solid #e11d48;
+}
+
+.stats-team-block.opp {
+  border-left: 4px solid #2563eb;
+}
+
+.stats-score {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.stats-score-number {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  color: #111827;
+}
+
+.stats-score-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6b7280;
+}
+
+.stats-score-assists {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+/* ─── Status grid ───────────────────────────────────────── */
+.stats-status-section {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.stats-status-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #374151;
+  margin-bottom: 10px;
+}
+
+.stats-status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+}
+
+.stats-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #4b5563;
+  padding: 3px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.stats-status-row strong {
+  color: #111827;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: right;
+}
+
+/* ─── Stats rows ────────────────────────────────────────── */
+.stats-team-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: #374151;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #4b5563;
+  padding: 3px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stats-row strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.stats-chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 10px;
+}
+
+/* ─── Simulation ────────────────────────────────────────── */
+.sim-result-bar-wrap {
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 56px;
+  margin-bottom: 18px;
+  font-family: Arial, sans-serif;
+}
+
+.sim-result-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s ease;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.sim-result-segment span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+.sim-result-segment strong {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sim-seg-win {
+  background: #e11d48;
+  color: #fff;
+}
+
+.sim-seg-draw {
+  background: #6b7280;
+  color: #fff;
+}
+
+.sim-seg-loss {
+  background: #2563eb;
+  color: #fff;
+}
+
+.sim-empty {
+  padding: 24px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ─── Shot distribution legend ──────────────────────────── */
+.shot-dist-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.shot-dist-legend-group {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.shot-dist-legend-sep {
+  width: 1px;
+  height: 18px;
+  background: #d1d5db;
+  align-self: center;
+}
+
+.shot-dist-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-dot-empty {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.legend-dot-half {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid;
+  flex-shrink: 0;
+}

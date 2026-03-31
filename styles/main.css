@@ -1,0 +1,14 @@
+/* ─────────────────────────────────────────────────────────
+   main.css — import aggregator
+   Import order matters: base → layout → topbar → navigation
+   → match-setup → shots → stats → players
+   ───────────────────────────────────────────────────────── */
+
+@import './base.css';
+@import './layout.css';
+@import './topbar.css';
+@import './navigation.css';
+@import './match-setup.css';
+@import './shots.css';
+@import './stats.css';
+@import './players.css';

@@ -1,0 +1,314 @@
+/* ─────────────────────────────────────────────────────────
+   match-setup.css — match configuration bar, setup fields,
+                     custom select, number stepper,
+                     no-match placeholder, empty state
+   ───────────────────────────────────────────────────────── */
+
+/* ─── Match setup bar ───────────────────────────────────── */
+.match-setup {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.match-setup > button {
+  height: 32px;
+  padding: 0 12px;
+  white-space: nowrap;
+  align-self: flex-end;
+  font-size: 13px;
+}
+
+.match-setup-fields {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+/* ─── Setup fields ──────────────────────────────────────── */
+.setup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.setup-field input,
+.setup-field select {
+  height: 32px;
+  box-sizing: border-box;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #ffffff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+
+.setup-field input:focus,
+.setup-field select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.setup-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7280' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.setup-field input[type="text"] {
+  width: 180px;
+}
+
+.setup-field input[type="date"] {
+  width: 160px;
+  cursor: pointer;
+}
+
+.setup-field input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+  filter: invert(40%) sepia(0%) saturate(0%);
+}
+
+.setup-field input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.setup-field input[type="number"] {
+  width: 80px;
+}
+
+/* ─── Custom select ─────────────────────────────────────── */
+.custom-select-wrap {
+  position: relative;
+}
+
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 32px;
+  min-width: 130px;
+  padding: 0 10px;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.custom-select-trigger:hover {
+  border-color: #d1d5db;
+  opacity: 1;
+}
+
+.custom-select-trigger[aria-expanded="true"] {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.custom-select-chevron {
+  font-size: 12px;
+  color: #6b7280;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.custom-select-trigger[aria-expanded="true"] .custom-select-chevron {
+  transform: rotate(180deg);
+}
+
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  z-index: 500;
+  padding: 4px;
+  list-style: none;
+  margin: 0;
+}
+
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+
+.custom-select-option:hover {
+  background: #f3f4f6;
+}
+
+.custom-select-option[aria-selected="true"] {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.custom-select-option[data-value=""] {
+  color: #9ca3af;
+}
+
+/* Compact variant — fragment select inside shot cards */
+.shot-fragment-wrap .custom-select-trigger {
+  min-width: 60px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.shot-fragment-wrap .custom-select-dropdown {
+  min-width: 60px;
+}
+
+.shot-fragment-wrap .custom-select-option {
+  padding: 6px 10px;
+  font-size: 13px;
+  justify-content: center;
+}
+
+/* ─── Number stepper ────────────────────────────────────── */
+.number-stepper {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  width: fit-content;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.number-stepper:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.number-stepper input[type="number"] {
+  width: 40px;
+  height: 100%;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  text-align: center;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  outline: none;
+  -moz-appearance: textfield;
+  flex-shrink: 0;
+}
+
+.number-stepper input[type="number"]::-webkit-inner-spin-button,
+.number-stepper input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-btn {
+  width: 28px;
+  flex-shrink: 0;
+  height: 100%;
+  background: #ffffff;
+  border: none;
+  border-radius: 0;
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.12s, color 0.12s;
+  opacity: 1 !important;
+}
+
+.stepper-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+  opacity: 1 !important;
+}
+
+.number-stepper:focus-within .stepper-btn {
+  background: #ffffff;
+}
+
+/* ─── No-match placeholder ──────────────────────────────── */
+.no-match-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+.no-match-icon {
+  font-size: 56px;
+  color: #cbd5e1;
+  line-height: 1;
+}
+
+.no-match-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.no-match-sub {
+  font-size: 14px;
+  color: #64748b;
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── Empty state ───────────────────────────────────────── */
+.empty {
+  padding: 16px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  background: #f8fafc;
+}

@@ -1,0 +1,141 @@
+/* ─────────────────────────────────────────────────────────
+   topbar.css — top navigation bar, brand, auth buttons
+   ───────────────────────────────────────────────────────── */
+
+.topbar {
+  height: 57px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  z-index: 200;
+}
+
+/* ─── Left side ─────────────────────────────────────────── */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-menu-btn {
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 8px;
+  line-height: 1;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.topbar-menu-btn:hover {
+  background: #f3f4f6;
+}
+
+/* Hide hamburger when sidebar is open; show it only when collapsed */
+.app-shell:not(.sidebar-collapsed) .topbar-menu-btn {
+  display: none;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.topbar-club-logo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.topbar-brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #111827;
+  white-space: nowrap;
+}
+
+/* ─── Right side ────────────────────────────────────────── */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-divider {
+  color: #d1d5db;
+  font-size: 16px;
+  user-select: none;
+  padding: 0 2px;
+}
+
+/* Support button */
+.btn-support {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  background: #fff1f2;
+  border: 1.5px solid #fecdd3;
+  color: #e11d48;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-support:hover {
+  background: #ffe4e6;
+  border-color: #fda4af;
+}
+
+/* Auth buttons */
+.btn-auth {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-login {
+  background: none;
+  border: 1.5px solid #e5e7eb;
+  color: #374151;
+}
+
+.btn-login:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.btn-register {
+  background: #111827;
+  border: 1.5px solid #111827;
+  color: #ffffff;
+}
+
+.btn-register:hover {
+  background: #1f2937;
+  border-color: #1f2937;
+}
