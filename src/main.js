@@ -5,6 +5,7 @@ import './ui/setup.js';
 import './ui/controls.js';
 import './tabs/stats.js';
 import './tabs/players.js';
+import './tabs/docs.js';
 
 drawPitch();
 renderShotsList();
