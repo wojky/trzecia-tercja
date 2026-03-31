@@ -46,6 +46,7 @@ venueSelect.addEventListener('change', validateStart);
 
 startBtn.addEventListener('click', () => {
   mainLayout.style.display = '';
+  document.getElementById('noMatchPlaceholder').style.display = 'none';
   startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
   startBtn.classList.add('active');
 });
@@ -381,6 +382,14 @@ function renderShotsList() {
         <div class="shot-header-row">
           <strong>Uderzenie ${index + 1}</strong>
           <span class="shot-coords">x: ${shot.contextX} y: ${shot.contextY}</span>
+          <div class="shot-item-menu-wrap">
+            <button type="button" class="shot-item-menu-btn" data-index="${index}" title="Opcje"><i class="bi bi-three-dots-vertical"></i></button>
+            <div class="shot-item-dropdown" hidden>
+              <button type="button" class="shot-item-dropdown-item danger delete-shot-btn" data-index="${index}">
+                <i class="bi bi-trash3"></i> Usuń uderzenie
+              </button>
+            </div>
+          </div>
         </div>
         <div class="shot-fields">
           <div class="shot-fields-row">
@@ -447,12 +456,17 @@ function renderShotsList() {
             <option value="po-bledzie-indywidualnym" ${shot.status.includes('po-bledzie-indywidualnym') ? 'selected' : ''}>Po błędzie indywidualnym</option>
             <option value="sfg-strzal" ${shot.status.includes('sfg-strzal') ? 'selected' : ''}>SFG strzał</option>
           </select>
-          <button type="button" class="delete-shot-btn" data-index="${index}" title="Usuń"><i class="bi bi-trash3-fill"></i></button>
         </div>
       </div>
     `;
     })
     .join('');
+
+  if (isReadMode) {
+    document.querySelectorAll('#shotList input, #shotList select, #shotList button:not(.shot-item-menu-btn)').forEach(el => {
+      el.disabled = true;
+    });
+  }
 }
 
 function getCanvasCoordinates(event) {
@@ -746,12 +760,26 @@ canvas.addEventListener('mouseup', (event) => {
 });
 
 clearBtn.addEventListener('click', () => {
+  if (!window.confirm(`Usunąć wszystkie uderzenia (${shots.length})?\n\nTej operacji nie można cofnąć.`)) return;
   cancelAssistMode();
   shots.length = 0;
   hoveredShotIndex = null;
   drawPitch();
   renderShotsList();
+  document.getElementById('shotListMenu').hidden = true;
 });
+
+const shotListMenuBtn = document.getElementById('shotListMenuBtn');
+const shotListMenu = document.getElementById('shotListMenu');
+shotListMenuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  shotListMenu.hidden = !shotListMenu.hidden;
+});
+document.addEventListener('click', () => {
+  shotListMenu.hidden = true;
+  document.querySelectorAll('.shot-item-dropdown:not([hidden])').forEach(d => d.hidden = true);
+});
+shotListMenu.addEventListener('click', (e) => e.stopPropagation());
 
 exportBtn.addEventListener('click', exportShotsToCsv);
 
@@ -762,6 +790,16 @@ readModeBtn.addEventListener('click', () => {
     ? '<i class="bi bi-cursor-fill"></i> Tryb odczytu'
     : '<i class="bi bi-cursor"></i> Tryb odczytu';
   canvas.style.cursor = isReadMode ? 'crosshair' : 'default';
+
+  // block/unblock shot list inputs
+  document.querySelectorAll('#shotList input, #shotList select, #shotList button:not(.shot-item-menu-btn)').forEach(el => {
+    el.disabled = isReadMode;
+  });
+  // block/unblock match setup inputs
+  document.querySelectorAll('.match-setup input, .match-setup select').forEach(el => {
+    el.disabled = isReadMode;
+  });
+
   if (!isReadMode) {
     hoveredShotIndex = null;
     drawPitch();
@@ -810,6 +848,26 @@ teamFilter.addEventListener('change', (event) => {
 });
 
 shotList.addEventListener('click', (event) => {
+  // shot item kebab menu toggle
+  const shotMenuBtn = event.target.closest('.shot-item-menu-btn');
+  if (shotMenuBtn) {
+    event.stopPropagation();
+    const wrap = shotMenuBtn.closest('.shot-item-menu-wrap');
+    const dropdown = wrap.querySelector('.shot-item-dropdown');
+    // close all other open shot dropdowns first
+    document.querySelectorAll('.shot-item-dropdown:not([hidden])').forEach(d => {
+      if (d !== dropdown) d.hidden = true;
+    });
+    dropdown.hidden = !dropdown.hidden;
+    return;
+  }
+
+  // prevent click inside a shot dropdown from bubbling to document (which would close it)
+  const shotDropdown = event.target.closest('.shot-item-dropdown');
+  if (shotDropdown) {
+    event.stopPropagation();
+  }
+
   const xgRecalcBtn = event.target.closest('.shot-xg-recalc-btn');
   if (xgRecalcBtn) {
     const index = Number(xgRecalcBtn.dataset.index);
@@ -845,6 +903,8 @@ shotList.addEventListener('click', (event) => {
   if (!deleteButton) return;
 
   const index = Number(deleteButton.dataset.index);
+  if (!window.confirm(`Usunąć uderzenie ${index + 1}?\n\nTej operacji nie można cofnąć.`)) return;
+
   if (assistModeIndex === index) {
     cancelAssistMode();
   } else if (assistModeIndex !== null && assistModeIndex > index) {
@@ -1074,6 +1134,7 @@ function importFromCsv(text) {
   if (firstRow.videoFragmentsCount) videoFragmentsCount.value = Math.max(1, parseInt(firstRow.videoFragmentsCount) || 1);
   validateStart();
   mainLayout.style.display = '';
+  document.getElementById('noMatchPlaceholder').style.display = 'none';
   startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
   startBtn.classList.add('active');
 

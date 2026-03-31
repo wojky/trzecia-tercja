@@ -72,6 +72,15 @@
         </button>
       </div>
 
+      <div class="no-match-placeholder" id="noMatchPlaceholder">
+        <i class="bi bi-flag-fill no-match-icon"></i>
+        <p class="no-match-title">Brak aktywnego meczu</p>
+        <p class="no-match-sub">
+          Uzupełnij dane powyżej i kliknij <strong>Start</strong>, lub wczytaj
+          istniejący mecz przez <strong>Wczytaj CSV</strong>.
+        </p>
+      </div>
+
       <div class="layout" id="mainLayout" style="display: none">
         <div class="card">
           <div class="card-tabs">
@@ -146,16 +155,15 @@
                   <i class="bi bi-arrow-up-circle-fill"></i> Kierunek ataku:
                   góra
                 </button>
-                <button id="exportBtn" type="button">Eksportuj CSV</button>
+                <button id="exportBtn" type="button">
+                  <i class="bi bi-download"></i> Eksportuj CSV
+                </button>
                 <input
                   id="importFileInput"
                   type="file"
                   accept=".csv"
                   style="display: none"
                 />
-                <button id="clearBtn" type="button">
-                  Wyczyść wszystkie uderzenia
-                </button>
               </div>
             </div>
           </div>
@@ -416,8 +424,29 @@
 
         <div class="card" id="shotListCard">
           <div class="shots-header">
-            <h2>Lista uderzeń</h2>
-            <div class="counter" id="counter">0</div>
+            <div class="shots-header-left">
+              <h2>Lista uderzeń</h2>
+              <div class="counter" id="counter">0</div>
+            </div>
+            <div class="shots-header-menu-wrap">
+              <button
+                type="button"
+                id="shotListMenuBtn"
+                class="shots-header-menu-btn"
+                title="Opcje"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <div id="shotListMenu" class="shots-header-dropdown" hidden>
+                <button
+                  type="button"
+                  id="clearBtn"
+                  class="shots-header-dropdown-item danger"
+                >
+                  <i class="bi bi-trash3"></i> Wyczyść wszystkie uderzenia
+                </button>
+              </div>
+            </div>
           </div>
           <div id="shotList" class="shot-list"></div>
         </div>
