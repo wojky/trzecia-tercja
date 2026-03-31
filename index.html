@@ -385,10 +385,6 @@
                     type="radio"
                     name="collabMode"
                     value="ps"
-                    onchange="
-                      document.getElementById('collabMatrix').innerHTML =
-                        renderCollabMatrix(this.value)
-                    "
                   />
                   asysta → uderzenie
                 </label>
@@ -397,10 +393,6 @@
                     type="radio"
                     name="collabMode"
                     value="sp"
-                    onchange="
-                      document.getElementById('collabMatrix').innerHTML =
-                        renderCollabMatrix(this.value)
-                    "
                   />
                   uderzenie ← asysta
                 </label>
@@ -410,10 +402,6 @@
                     name="collabMode"
                     value="combined"
                     checked
-                    onchange="
-                      document.getElementById('collabMatrix').innerHTML =
-                        renderCollabMatrix(this.value)
-                    "
                   />
                   razem
                 </label>
@@ -521,12 +509,7 @@
     <div id="assistToast">
       <i class="bi bi-pencil"></i> <span id="assistToastMsg"></span>
     </div>
-    <script src="config.js" defer></script>
-    <script src="app.js" defer></script>
-    <script src="stats.js" defer></script>
-    <script src="players.js" defer></script>
-    <script src="simulation.js" defer></script>
-    <script src="settings.js" defer></script>
+    <script type="module" src="src/main.js"></script>
 
     <dialog id="playerDialog">
       <div class="player-dialog-header">
