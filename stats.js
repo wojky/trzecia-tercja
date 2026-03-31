@@ -418,14 +418,15 @@ function renderStats() {
 // ─── Przełączanie zakładek ────────────────────────────────────────────────────
 
 function setActiveTab(activeId) {
-  ['tabMap', 'tabStats', 'tabPlayers', 'tabSim'].forEach(id => {
+  ['tabMap', 'tabStats', 'tabPlayers', 'tabSim', 'tabSettings'].forEach(id => {
     document.getElementById(id).classList.toggle('active', id === activeId);
   });
-  document.getElementById('mapPanel').style.display     = activeId === 'tabMap'     ? 'block' : 'none';
-  document.getElementById('statsPanel').style.display   = activeId === 'tabStats'   ? 'block' : 'none';
-  document.getElementById('playersPanel').style.display = activeId === 'tabPlayers' ? 'block' : 'none';
-  document.getElementById('simPanel').style.display     = activeId === 'tabSim'     ? 'block' : 'none';
-  document.getElementById('shotListCard').style.display = activeId === 'tabMap' ? 'block' : 'none';
+  document.getElementById('mapPanel').style.display      = activeId === 'tabMap'      ? 'block' : 'none';
+  document.getElementById('statsPanel').style.display    = activeId === 'tabStats'    ? 'block' : 'none';
+  document.getElementById('playersPanel').style.display  = activeId === 'tabPlayers'  ? 'block' : 'none';
+  document.getElementById('simPanel').style.display      = activeId === 'tabSim'      ? 'block' : 'none';
+  document.getElementById('settingsPanel').style.display = activeId === 'tabSettings' ? 'block' : 'none';
+  document.getElementById('shotListCard').style.display  = activeId === 'tabMap' ? 'block' : 'none';
   document.getElementById('mainLayout').style.gridTemplateColumns = activeId === 'tabMap' ? '' : '1fr';
 }
 
@@ -444,4 +445,9 @@ document.getElementById('tabPlayers').addEventListener('click', () => {
 document.getElementById('tabSim').addEventListener('click', () => {
   setActiveTab('tabSim');
   renderSimulation();
+});
+
+document.getElementById('tabSettings').addEventListener('click', () => {
+  setActiveTab('tabSettings');
+  renderSettings();
 });

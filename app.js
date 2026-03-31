@@ -395,7 +395,10 @@ function renderShotsList() {
             </div>
             <div class="shot-field">
               <label for="xg-${index}">xG</label>
-              <input id="xg-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="xg" value="${shot.xg || ''}" placeholder="np. 0.18" />
+              <div class="shot-field-input-row">
+                <input id="xg-${index}" type="text" class="shot-text-input" data-index="${index}" data-field="xg" value="${shot.xg || ''}" placeholder="np. 0.18" />
+                <button type="button" class="shot-xg-recalc-btn" data-index="${index}" title="Przelicz xG według aktywnego modelu"><i class="bi bi-arrow-repeat"></i></button>
+              </div>
             </div>
           </div>
           <div class="shot-fields-row">
@@ -465,6 +468,50 @@ function isInsidePitch(x, y) {
   );
 }
 
+/**
+ * Compute xG — delegates to the currently selected model from settings.js.
+ * Falls back to the built-in logistic model if settings.js is not loaded yet.
+ */
+function computeXg(cxM, cyM, statusArray) {
+  if (typeof xgModels !== 'undefined' && typeof activeXgModelKey !== 'undefined') {
+    const model = xgModels[activeXgModelKey];
+    if (model) return model.compute(cxM, cyM, statusArray);
+  }
+  // Fallback: built-in logistic model
+  return _xgLogistic(cxM, cyM, statusArray);
+}
+
+/**
+ * Built-in 2-feature logistic regression (distance + goal angle).
+ * Coordinate system: cxM = metres from penalty-area left edge,
+ * cyM = metres from goal line (positive = inside pitch).
+ */
+function _xgLogistic(cxM, cyM, statusArray) {
+  const cx = parseFloat(cxM);
+  const cy = parseFloat(cyM);
+  const status = Array.isArray(statusArray) ? statusArray : [];
+
+  if (status.includes('rzut-karny')) return 0.79;
+  if (cy <= 0) return 0.01;
+
+  const GOAL_X    = 20.16;
+  const GOAL_HALF = 3.66;
+
+  const dist = Math.sqrt((cx - GOAL_X) ** 2 + cy ** 2);
+
+  const a1 = Math.atan2(-cy, GOAL_X - GOAL_HALF - cx);
+  const a2 = Math.atan2(-cy, GOAL_X + GOAL_HALF - cx);
+  let angle = Math.abs(a1 - a2);
+  if (angle > Math.PI) angle = 2 * Math.PI - angle;
+
+  const isHeader = status.includes('uderzenie-glowa');
+  const logit = isHeader
+    ? -3.8 + (-0.05 * dist) + (2.5 * angle)
+    : -3.0 + (-0.05 * dist) + (3.0 * angle);
+
+  return Math.min(0.99, Math.max(0.01, 1 / (1 + Math.exp(-logit))));
+}
+
 function createShot(x, y, team = 'ourTeam') {
   const scaleX = pitch.width / 68;
   const scaleY = pitch.height / 35;
@@ -491,7 +538,7 @@ function createShot(x, y, team = 'ourTeam') {
     matchTime: last ? last.matchTime : '',
     playerNumber: '',
     passerNumber: '',
-    xg: '',
+    xg: computeXg(cxM, cyM, []).toFixed(2),
     videoFragment: last ? last.videoFragment : '',
     assistPos: null,
     assistArrow: null,
@@ -729,6 +776,13 @@ videoFragmentsCount.addEventListener('change', () => {
 
 document.getElementById('assistModeCancelBtn').addEventListener('click', cancelAssistMode);
 
+document.getElementById('assistModeClearBtn').addEventListener('click', () => {
+  if (assistModeIndex === null) return;
+  shots[assistModeIndex].assistPos   = null;
+  shots[assistModeIndex].assistArrow = null;
+  drawPitch();
+});
+
 document.getElementById('assistModePersonBtn').addEventListener('click', () => {
   assistSubMode = 'person';
   document.getElementById('assistModePersonBtn').classList.add('selected');
@@ -749,6 +803,25 @@ teamFilter.addEventListener('change', (event) => {
 });
 
 shotList.addEventListener('click', (event) => {
+  const xgRecalcBtn = event.target.closest('.shot-xg-recalc-btn');
+  if (xgRecalcBtn) {
+    const index = Number(xgRecalcBtn.dataset.index);
+    const shot = shots[index];
+    if (!shot) return;
+    const modelName = (typeof xgModels !== 'undefined' && typeof activeXgModelKey !== 'undefined')
+      ? xgModels[activeXgModelKey].name
+      : 'domyślny';
+    const confirmed = window.confirm(
+      `Przelicz xG (i xA) dla tego uderzenia?\n\nModel: „${modelName}"\n\nAktualna wartość xG (${shot.xg || '—'}) zostanie nadpisana.\nxA podającego zostanie automatycznie zaktualizowane.`
+    );
+    if (!confirmed) return;
+    const newXg = computeXg(shot.contextX, shot.contextY, shot.status).toFixed(2);
+    shot.xg = newXg;
+    const input = document.querySelector(`#xg-${index}`);
+    if (input) input.value = newXg;
+    return;
+  }
+
   const passerEditBtn = event.target.closest('.shot-passer-edit-btn');
   if (passerEditBtn) {
     const shotItem = passerEditBtn.closest('.shot-item');
@@ -788,6 +861,11 @@ shotList.addEventListener('change', (event) => {
     const index = Number(select.dataset.index);
     if (shots[index]) {
       shots[index].status = Array.from(select.selectedOptions).map(o => o.value);
+      // Recalculate xG whenever status tags change (penalty / header affect it significantly)
+      const newXg = computeXg(shots[index].contextX, shots[index].contextY, shots[index].status).toFixed(2);
+      shots[index].xg = newXg;
+      const xgInput = document.querySelector(`#xg-${index}`);
+      if (xgInput) xgInput.value = newXg;
     }
     return;
   }
