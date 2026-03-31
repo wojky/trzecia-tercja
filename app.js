@@ -44,6 +44,50 @@ opponentNameInput.addEventListener('input', validateStart);
 matchDateInput.addEventListener('change', validateStart);
 venueSelect.addEventListener('change', validateStart);
 
+// ── Custom venue select ────────────────────────────────────────────────────
+const _venueTrigger  = document.getElementById('venueSelectTrigger');
+const _venueDropdown = document.getElementById('venueSelectDropdown');
+const _venueLabel    = document.getElementById('venueSelectLabel');
+
+const VENUE_LABELS = { '': '— wybierz —', dom: 'Dom', wyjazd: 'Wyjazd', neutralne: 'Neutralne' };
+
+function _syncVenueDisplay(val) {
+  _venueLabel.textContent = VENUE_LABELS[val] ?? val;
+  _venueDropdown.querySelectorAll('.custom-select-option').forEach(opt => {
+    opt.setAttribute('aria-selected', opt.dataset.value === val ? 'true' : 'false');
+  });
+}
+
+_venueTrigger.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isOpen = !_venueDropdown.hidden;
+  _venueDropdown.hidden = isOpen;
+  _venueTrigger.setAttribute('aria-expanded', String(!isOpen));
+});
+
+_venueDropdown.addEventListener('click', (e) => {
+  const opt = e.target.closest('.custom-select-option');
+  if (!opt) return;
+  const val = opt.dataset.value;
+  venueSelect.value = val;
+  venueSelect.dispatchEvent(new Event('change'));
+  _syncVenueDisplay(val);
+  _venueDropdown.hidden = true;
+  _venueTrigger.setAttribute('aria-expanded', 'false');
+});
+
+document.addEventListener('click', () => {
+  if (!_venueDropdown.hidden) {
+    _venueDropdown.hidden = true;
+    _venueTrigger.setAttribute('aria-expanded', 'false');
+  }
+  document.querySelectorAll('.shot-frag-dropdown:not([hidden])').forEach(d => {
+    d.hidden = true;
+    const trigger = d.closest('.custom-select-wrap').querySelector('.shot-frag-trigger');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  });
+});
+
 startBtn.addEventListener('click', () => {
   mainLayout.style.display = '';
   document.getElementById('noMatchPlaceholder').style.display = 'none';
@@ -94,6 +138,20 @@ function getFragmentOptions(selectedValue) {
     options += `<option value="${i}" ${selectedValue == i ? 'selected' : ''}>${i}</option>`;
   }
   return options;
+}
+
+function getFragmentCustomSelect(index, selectedValue) {
+  const selVal = selectedValue || 1;
+  const count = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
+  let liItems = '';
+  for (let i = 1; i <= count; i++) {
+    liItems += `<li class="custom-select-option frag-opt" data-value="${i}" data-index="${index}" role="option" aria-selected="${selVal == i ? 'true' : 'false'}">${i}</li>`;
+  }
+  return `<div class="custom-select-wrap shot-fragment-wrap">
+      <select id="fragment-${index}" class="shot-fragment-select" data-index="${index}" data-field="videoFragment" style="display:none" aria-hidden="true">${getFragmentOptions(selectedValue)}</select>
+      <button type="button" class="custom-select-trigger shot-frag-trigger" data-index="${index}" aria-haspopup="listbox" aria-expanded="false"><span class="shot-frag-label">${selVal}</span><i class="bi bi-chevron-down custom-select-chevron"></i></button>
+      <ul class="custom-select-dropdown shot-frag-dropdown" hidden role="listbox">${liItems}</ul>
+    </div>`;
 }
 
 function getVisibleShots() {
@@ -395,9 +453,7 @@ function renderShotsList() {
           <div class="shot-fields-row">
             <div class="shot-field">
               <label for="fragment-${index}">Fragment wideo</label>
-              <select id="fragment-${index}" class="shot-text-input shot-fragment-select" data-index="${index}" data-field="videoFragment">
-                ${getFragmentOptions(shot.videoFragment)}
-              </select>
+              ${getFragmentCustomSelect(index, shot.videoFragment)}
             </div>
             <div class="shot-field">
               <label for="timestamp-${index}">Timestamp</label>
@@ -819,6 +875,17 @@ videoFragmentsCount.addEventListener('change', () => {
   renderShotsList();
 });
 
+document.getElementById('videoFragmentsMinus').addEventListener('click', () => {
+  const val = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
+  if (val > 1) { videoFragmentsCount.value = val - 1; renderShotsList(); }
+});
+
+document.getElementById('videoFragmentsPlus').addEventListener('click', () => {
+  const val = parseInt(videoFragmentsCount.value) || 1;
+  videoFragmentsCount.value = val + 1;
+  renderShotsList();
+});
+
 document.getElementById('assistModeCancelBtn').addEventListener('click', cancelAssistMode);
 
 document.getElementById('assistModeClearBtn').addEventListener('click', () => {
@@ -848,6 +915,39 @@ teamFilter.addEventListener('change', (event) => {
 });
 
 shotList.addEventListener('click', (event) => {
+  // fragment custom select – trigger
+  const fragTrigger = event.target.closest('.shot-frag-trigger');
+  if (fragTrigger) {
+    event.stopPropagation();
+    const wrap = fragTrigger.closest('.custom-select-wrap');
+    const dd = wrap.querySelector('.shot-frag-dropdown');
+    document.querySelectorAll('.shot-frag-dropdown:not([hidden])').forEach(d => {
+      if (d !== dd) {
+        d.hidden = true;
+        d.closest('.custom-select-wrap').querySelector('.shot-frag-trigger').setAttribute('aria-expanded', 'false');
+      }
+    });
+    dd.hidden = !dd.hidden;
+    fragTrigger.setAttribute('aria-expanded', String(!dd.hidden));
+    return;
+  }
+
+  // fragment custom select – option
+  const fragOpt = event.target.closest('.frag-opt');
+  if (fragOpt) {
+    event.stopPropagation();
+    const val = fragOpt.dataset.value;
+    const wrap = fragOpt.closest('.custom-select-wrap');
+    const select = wrap.querySelector('.shot-fragment-select');
+    select.value = val;
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    wrap.querySelector('.shot-frag-label').textContent = val;
+    wrap.querySelectorAll('.frag-opt').forEach(o => o.setAttribute('aria-selected', o.dataset.value === val ? 'true' : 'false'));
+    wrap.querySelector('.shot-frag-trigger').setAttribute('aria-expanded', 'false');
+    wrap.querySelector('.shot-frag-dropdown').hidden = true;
+    return;
+  }
+
   // shot item kebab menu toggle
   const shotMenuBtn = event.target.closest('.shot-item-menu-btn');
   if (shotMenuBtn) {
@@ -1130,7 +1230,7 @@ function importFromCsv(text) {
   })();
   if (firstRow.opponent) opponentNameInput.value = firstRow.opponent;
   if (firstRow.matchDate) matchDateInput.value = firstRow.matchDate;
-  if (firstRow.venue) venueSelect.value = firstRow.venue;
+  if (firstRow.venue) { venueSelect.value = firstRow.venue; _syncVenueDisplay(firstRow.venue); }
   if (firstRow.videoFragmentsCount) videoFragmentsCount.value = Math.max(1, parseInt(firstRow.videoFragmentsCount) || 1);
   validateStart();
   mainLayout.style.display = '';

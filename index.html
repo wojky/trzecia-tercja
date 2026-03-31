@@ -4,13 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trzecia Tercja</title>
+    <meta name="description" content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu." />
+    <meta name="author" content="Pomorzanin Toruń" />
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wojky.github.io/trzecia-tercja/" />
+    <meta property="og:title" content="Trzecia Tercja" />
+    <meta property="og:description" content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu." />
+    <meta property="og:image" content="https://wojky.github.io/trzecia-tercja/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="pl_PL" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Trzecia Tercja" />
+    <meta name="twitter:description" content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu." />
+    <meta name="twitter:image" content="https://wojky.github.io/trzecia-tercja/og-image.png" />
+
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=2" />
   </head>
   <body>
     <div class="app">
@@ -51,17 +70,33 @@
             <input id="matchDate" type="date" />
           </div>
           <div class="setup-field">
-            <label for="venueSelect">Miejsce</label>
-            <select id="venueSelect">
-              <option value="">— wybierz —</option>
-              <option value="dom">Dom</option>
-              <option value="wyjazd">Wyjazd</option>
-              <option value="neutralne">Neutralne</option>
-            </select>
+            <label>Miejsce</label>
+            <div class="custom-select-wrap" id="venueSelectWrap">
+              <select id="venueSelect" style="display:none" aria-hidden="true">
+                <option value="">— wybierz —</option>
+                <option value="dom">Dom</option>
+                <option value="wyjazd">Wyjazd</option>
+                <option value="neutralne">Neutralne</option>
+              </select>
+              <button type="button" class="custom-select-trigger" id="venueSelectTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="venueSelectLabel">— wybierz —</span>
+                <i class="bi bi-chevron-down custom-select-chevron"></i>
+              </button>
+              <ul class="custom-select-dropdown" id="venueSelectDropdown" role="listbox" hidden>
+                <li class="custom-select-option" data-value="" role="option">— wybierz —</li>
+                <li class="custom-select-option" data-value="dom" role="option"><i class="bi bi-house-fill"></i> Dom</li>
+                <li class="custom-select-option" data-value="wyjazd" role="option"><i class="bi bi-bus-front-fill"></i> Wyjazd</li>
+                <li class="custom-select-option" data-value="neutralne" role="option"><i class="bi bi-geo-alt-fill"></i> Neutralne</li>
+              </ul>
+            </div>
           </div>
           <div class="setup-field">
             <label for="videoFragmentsCount">Fragmenty wideo</label>
-            <input id="videoFragmentsCount" type="number" min="1" value="1" />
+            <div class="number-stepper">
+              <button type="button" id="videoFragmentsMinus" class="stepper-btn" aria-label="Zmniejsz"><i class="bi bi-dash"></i></button>
+              <input id="videoFragmentsCount" type="number" min="1" value="1" inputmode="numeric" />
+              <button type="button" id="videoFragmentsPlus" class="stepper-btn" aria-label="Zwiększ"><i class="bi bi-plus"></i></button>
+            </div>
           </div>
         </div>
         <button id="startBtn" type="button" disabled>
