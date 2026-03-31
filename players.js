@@ -1,4 +1,5 @@
 // ─── Globals ──────────────────────────────────────────────────────────────────
+// CMP_COLORS — defined in config.js
 
 let _collabPlayers = [];
 let _collabMapPS   = {}; // [passer][shooter]
@@ -8,8 +9,6 @@ let _collabMapC    = {}; // symmetric key → count
 let _allPlayerRows = []; // full rows for comparison picker
 let _compareSelection = []; // up to 3 player numbers
 let _compareChart = null;
-
-const CMP_COLORS = ['#e11d48', '#2563eb', '#f59e0b'];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

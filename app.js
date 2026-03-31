@@ -95,13 +95,6 @@ function getFragmentOptions(selectedValue) {
   return options;
 }
 
-const pitch = {
-  x: 40,
-  y: 20,
-  width: 720,
-  height: 370,
-};
-
 function getVisibleShots() {
   if (activeTeamFilter === 'all') {
     return shots;
