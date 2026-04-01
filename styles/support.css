@@ -26,7 +26,10 @@
   color: #111827;
   text-decoration: none;
   border: 1.5px solid #f3f4f6;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    background 0.15s;
 }
 
 .coffee-tile:hover {
