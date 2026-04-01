@@ -52,7 +52,9 @@
   background: #ffffff;
   color: #111827;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   font-family: inherit;
 }
 
@@ -117,7 +119,9 @@
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .custom-select-trigger:hover {
@@ -149,7 +153,7 @@
   background: #ffffff;
   border: 1.5px solid #e5e7eb;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   z-index: 500;
   padding: 4px;
   list-style: none;
@@ -212,7 +216,9 @@
   border-radius: 8px;
   overflow: hidden;
   background: #ffffff;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .number-stepper:focus-within {
@@ -257,7 +263,9 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   opacity: 1 !important;
 }
 
@@ -311,4 +319,223 @@
   border-radius: 12px;
   color: #64748b;
   background: #f8fafc;
+}
+
+/* ─── Stepper + config button row ───────────────────────── */
+.stepper-with-config {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepper-config-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
+}
+
+.stepper-config-btn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #f5f3ff;
+  opacity: 1;
+}
+
+/* ─── Video fragments dialog ────────────────────────────── */
+#videoFragmentsDialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  width: min(560px, 96vw);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  background: #fff;
+}
+
+#videoFragmentsDialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.vfd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.vfd-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.vfd-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.vfd-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vfd-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 4px;
+}
+
+.vfd-col-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.vfd-col-label:nth-child(1) {
+  width: 24px;
+  flex-shrink: 0;
+}
+.vfd-col-label:nth-child(2) {
+  flex: 1;
+}
+.vfd-col-label.vfd-col-offset {
+  width: 160px;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+.vfd-col-label .bi {
+  font-size: 9px;
+  color: #9ca3af;
+  vertical-align: middle;
+}
+
+.vfd-num {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vfd-name-input {
+  flex: 1;
+  height: 32px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.vfd-name-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.vfd-name-input::placeholder {
+  color: #9ca3af;
+}
+
+.vfd-offset-input {
+  width: 160px;
+  flex-shrink: 0;
+  height: 32px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.vfd-offset-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.vfd-offset-input::placeholder {
+  color: #9ca3af;
+  font-family: inherit;
+}
+
+.vfd-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vfd-save-btn {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+  background: #111827;
+  color: #fff;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vfd-save-btn:hover {
+  background: #1f2937;
+}
+
+.vfd-cancel-btn {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  background: #f1f5f9;
+  color: #374151;
+  border-radius: 8px;
+}
+
+.vfd-cancel-btn:hover {
+  background: #e2e8f0;
+  opacity: 1;
 }

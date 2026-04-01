@@ -98,7 +98,9 @@
   background: #fff1f2;
   border: 1.5px solid #fecdd3;
   color: #e11d48;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .btn-support:hover {
@@ -115,7 +117,9 @@
   cursor: pointer;
   font-family: inherit;
   line-height: 1;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .btn-login {

@@ -9,12 +9,12 @@
 
 **xG (Expected Goals, pol. _oczekiwane gole_)** to liczba wyrażająca **jakość sytuacji strzeleckiej** – prawdopodobieństwo, że strzał oddany z danej pozycji i w danych warunkach zakończy się golem. Wartość mieści się w przedziale od 0 do 1.
 
-| Przykład | xG | Interpretacja |
-|----------|-----|---------------|
-| Strzał z 30 metrów, małe okno | 0.03 | 3% szansy na gola |
-| Strzał z 12 m, środek, po dośrodkowaniu | 0.18 | 18% szansy |
-| Sam na sam z bramkarzem, 8 m | 0.55 | 55% szansy |
-| Rzut karny | 0.79 | 79% szansy |
+| Przykład                                | xG   | Interpretacja     |
+| --------------------------------------- | ---- | ----------------- |
+| Strzał z 30 metrów, małe okno           | 0.03 | 3% szansy na gola |
+| Strzał z 12 m, środek, po dośrodkowaniu | 0.18 | 18% szansy        |
+| Sam na sam z bramkarzem, 8 m            | 0.55 | 55% szansy        |
+| Rzut karny                              | 0.79 | 79% szansy        |
 
 ### Co xG mówi, a czego nie mówi
 
@@ -44,10 +44,10 @@ xG = 1 / (1 + exp(-(β₀ + β₁·d + β₂·θ)))
 
 Współczynniki:
 
-| Typ uderzenia | β₀ | β₁ (dystans) | β₂ (kąt) |
-|---|---|---|---|
-| Strzał nogą | −3.0 | −0.05 | 3.0 |
-| Strzał głową | −3.8 | −0.05 | 2.5 |
+| Typ uderzenia | β₀   | β₁ (dystans) | β₂ (kąt) |
+| ------------- | ---- | ------------ | -------- |
+| Strzał nogą   | −3.0 | −0.05        | 3.0      |
+| Strzał głową  | −3.8 | −0.05        | 2.5      |
 
 Rzut karny: stała wartość **0.79**.
 
@@ -108,6 +108,7 @@ xG(głowa po dośr.)    = 0.65 · exp(−0.21 · d_adj)
 Rozwinięta wersja modelu Caleya oparta na **regresji logistycznej** z czterema osobnymi zestawami współczynników dla każdego z typów strzałów. Wykazuje wyższą zgodność z danymi empirycznymi niż v1.
 
 Przykład (głowa po dośrodkowaniu):
+
 ```
 logit(xG) = −2.88 − 0.21·d + 2.13·relAngle
 ```
@@ -132,7 +133,7 @@ xA pozwala docenić **kreatorów gry** — zawodników, którzy regularnie tworz
 
 ### xA a tradycyjna asysta
 
-Tradycyjna asysta rejestruje jedynie podanie bezpośrednio poprzedzające gola. xA uwzględnia *wszystkie* niebezpieczne podania — niezależnie od efektu strzeleckiego.
+Tradycyjna asysta rejestruje jedynie podanie bezpośrednio poprzedzające gola. xA uwzględnia _wszystkie_ niebezpieczne podania — niezależnie od efektu strzeleckiego.
 
 ---
 
@@ -194,12 +195,12 @@ xG_skum(t) = xG₁ + xG₂ + ... + xGₜ
 
 ### Co odczytujemy z wykresu?
 
-| Kształt krzywej | Interpretacja |
-|-----------------|---------------|
-| Stromość ↑ | „Burza strzałów" — wiele groźnych sytuacji w krótkim czasie |
-| Płaski odcinek | Brak groźnych okazji — mecz się wyrównał lub drużyna oddała inicjatywę |
-| Wysoka krzywa przy małej liczbie goli | Dobra jakość okazji, pech lub świetny bramkarz przeciwnika |
-| Niska krzywa przy golu | Gol z okazji poniżej oczekiwania (= niski xG) |
+| Kształt krzywej                       | Interpretacja                                                          |
+| ------------------------------------- | ---------------------------------------------------------------------- |
+| Stromość ↑                            | „Burza strzałów" — wiele groźnych sytuacji w krótkim czasie            |
+| Płaski odcinek                        | Brak groźnych okazji — mecz się wyrównał lub drużyna oddała inicjatywę |
+| Wysoka krzywa przy małej liczbie goli | Dobra jakość okazji, pech lub świetny bramkarz przeciwnika             |
+| Niska krzywa przy golu                | Gol z okazji poniżej oczekiwania (= niski xG)                          |
 
 ### xG a wynik meczu
 
@@ -228,12 +229,12 @@ P'(k) = P(k) · (1 − xGᵢ) + P(k−1) · xGᵢ
 
 ### Wyniki symulacji
 
-| Wynik | Jak jest liczony |
-|-------|-----------------|
+| Wynik                     | Jak jest liczony                                                     |
+| ------------------------- | -------------------------------------------------------------------- |
 | Wygrana / Remis / Porażka | Suma iloczynów P(i goli nasze) × P(j goli ryw.) dla odpowiednich i,j |
-| Oczekiwane gole | Średnia rozkładu PMF (= suma xG drużyny) |
-| Odchylenie standardowe | Odchylenie standardowe rozkładu PMF |
-| PPG (punkty na mecz) | 3 × P(wygrana) + 1 × P(remis) |
+| Oczekiwane gole           | Średnia rozkładu PMF (= suma xG drużyny)                             |
+| Odchylenie standardowe    | Odchylenie standardowe rozkładu PMF                                  |
+| PPG (punkty na mecz)      | 3 × P(wygrana) + 1 × P(remis)                                        |
 
 ### Ograniczenia symulacji
 
@@ -247,11 +248,11 @@ Macierz współpracy pokazuje, ile razy para zawodników uczestniczyła razem w 
 
 ### Tryby widoku
 
-| Tryb | Wiersz | Kolumna |
-|------|--------|---------|
-| **asysta → uderzenie** | Podający (assistujący) | Strzelec |
-| **uderzenie ← asysta** | Strzelec | Podający |
-| **razem** | Dowolny zawodnik | Dowolny zawodnik (symetrycznie) |
+| Tryb                   | Wiersz                 | Kolumna                         |
+| ---------------------- | ---------------------- | ------------------------------- |
+| **asysta → uderzenie** | Podający (assistujący) | Strzelec                        |
+| **uderzenie ← asysta** | Strzelec               | Podający                        |
+| **razem**              | Dowolny zawodnik       | Dowolny zawodnik (symetrycznie) |
 
 Liczba w komórce to **liczba akcji** między daną parą w rejestrowanym meczu.
 
@@ -269,14 +270,14 @@ Każda oś wykresu jest **znormalizowana do maksymalnej wartości w meczu** = 1.
 
 ### Wskaźniki na wykresie radarowym
 
-| Wskaźnik | Opis |
-|----------|------|
-| xG | Suma wartości xG ze strzałów |
-| xA | Suma wartości xA z podań |
-| xD | xG + xA |
-| Strzały | Łączna liczba oddanych strzałów |
-| Gole | Liczba strzałów zakończonych golem |
-| Celne | Liczba celnych strzałów (trafienie w bramkę lub gol) |
+| Wskaźnik | Opis                                                 |
+| -------- | ---------------------------------------------------- |
+| xG       | Suma wartości xG ze strzałów                         |
+| xA       | Suma wartości xA z podań                             |
+| xD       | xG + xA                                              |
+| Strzały  | Łączna liczba oddanych strzałów                      |
+| Gole     | Liczba strzałów zakończonych golem                   |
+| Celne    | Liczba celnych strzałów (trafienie w bramkę lub gol) |
 
 ### Tabela porównawcza
 
@@ -286,15 +287,15 @@ Tabela poniżej wykresu zawiera wartości bezwzględne. **Najlepszy wynik** w ka
 
 ## Źródła {#sources}
 
-| Autor | Tytuł | Link |
-|-------|-------|------|
-| Michael Caley | *Shot Matrix I: Making Sense of Shot Statistics* | [cartilagefreecaptain.com](https://cartilagefreecaptain.com/2013/09/23/shot-matrix-i-making-sense-of-shot-statistics/) |
-| Michael Caley | *Shot Matrix III: What Makes a Good Shot?* | [cartilagefreecaptain.com](https://cartilagefreecaptain.com/2014/01/14/shot-matrix-iii-what-makes-a-good-shot/) |
-| Tom Torvaney | *A Simple Expected Goals Model* | [statsbomb.com](https://statsbomb.com/articles/soccer/a-simple-expected-goals-model/) |
-| Łukasz Szczepański, Ian McHale | *Assist value in association football* | [JRSS-A](https://academic.oup.com/jrsssa/article-abstract/179/3/719/7083779) |
-| William Spearman | *Beyond Expected Goals* | [MIT Sloan 2018](https://www.sloansportsconference.com/research-papers/beyond-expected-goals) |
-| Martin Eastwood | *Expected Goals for All* | [pena.lt/y](https://pena.lt/y/2015/12/01/probability-of-scoring/) |
+| Autor                          | Tytuł                                            | Link                                                                                                                   |
+| ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Michael Caley                  | _Shot Matrix I: Making Sense of Shot Statistics_ | [cartilagefreecaptain.com](https://cartilagefreecaptain.com/2013/09/23/shot-matrix-i-making-sense-of-shot-statistics/) |
+| Michael Caley                  | _Shot Matrix III: What Makes a Good Shot?_       | [cartilagefreecaptain.com](https://cartilagefreecaptain.com/2014/01/14/shot-matrix-iii-what-makes-a-good-shot/)        |
+| Tom Torvaney                   | _A Simple Expected Goals Model_                  | [statsbomb.com](https://statsbomb.com/articles/soccer/a-simple-expected-goals-model/)                                  |
+| Łukasz Szczepański, Ian McHale | _Assist value in association football_           | [JRSS-A](https://academic.oup.com/jrsssa/article-abstract/179/3/719/7083779)                                           |
+| William Spearman               | _Beyond Expected Goals_                          | [MIT Sloan 2018](https://www.sloansportsconference.com/research-papers/beyond-expected-goals)                          |
+| Martin Eastwood                | _Expected Goals for All_                         | [pena.lt/y](https://pena.lt/y/2015/12/01/probability-of-scoring/)                                                      |
 
 ---
 
-*Dokumentacja dotyczy aplikacji Trzecia Tercja. Modele xG zostały zaimplementowane na podstawie publicznie dostępnych badań — nie były trenowane na własnych danych meczowych. Wartości xG mają charakter orientacyjny.*
+_Dokumentacja dotyczy aplikacji Trzecia Tercja. Modele xG zostały zaimplementowane na podstawie publicznie dostępnych badań — nie były trenowane na własnych danych meczowych. Wartości xG mają charakter orientacyjny._

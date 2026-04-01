@@ -5,6 +5,29 @@ import { enterAssistMode, cancelAssistMode } from '../match/assist.js';
 import { drawPitch } from '../match/pitch.js';
 import { renderShotsList, createShot, getVisibleShots } from '../match/shots.js';
 import { exportShotsToCsv, importFromCsv } from '../match/csv.js';
+import { parseTimeToSeconds, formatSecondsToMatchTime } from '../core/time.js';
+
+// ─── Time offset helper ───────────────────────────────────────────────────────
+
+/**
+ * If the shot has a timestamp and its fragment has an offset configured,
+ * compute matchTime = timestamp + offset and write it into both the shot
+ * object and the corresponding DOM input.
+ */
+function _applyTimestampOffset(index) {
+  const shot = shots[index];
+  if (!shot) return;
+  const fragmentIndex = (parseInt(shot.videoFragment) || 1) - 1;
+  const offset = state.fragmentOffsets[fragmentIndex];
+  if (offset === null || offset === undefined) return;
+  const ts = parseTimeToSeconds(shot.timestamp);
+  if (ts === null) return;
+  const matchTimeSec = ts + offset;
+  const formatted    = formatSecondsToMatchTime(matchTimeSec);
+  shot.matchTime     = formatted;
+  const matchTimeInput = document.querySelector(`#match-time-${index}`);
+  if (matchTimeInput) matchTimeInput.value = formatted;
+}
 
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
 
@@ -189,7 +212,8 @@ shotList.addEventListener('click', (event) => {
     const select = wrap.querySelector('.shot-fragment-select');
     select.value = val;
     select.dispatchEvent(new Event('change', { bubbles: true }));
-    wrap.querySelector('.shot-frag-label').textContent = val;
+    const label = state.fragmentNames[parseInt(val) - 1] || val;
+    wrap.querySelector('.shot-frag-label').textContent = label;
     wrap.querySelectorAll('.frag-opt').forEach(o => o.setAttribute('aria-selected', o.dataset.value === val ? 'true' : 'false'));
     wrap.querySelector('.shot-frag-trigger').setAttribute('aria-expanded', 'false');
     wrap.querySelector('.shot-frag-dropdown').hidden = true;
@@ -281,7 +305,10 @@ shotList.addEventListener('change', async (event) => {
   const fragmentSelect = event.target.closest('.shot-fragment-select');
   if (fragmentSelect) {
     const index = Number(fragmentSelect.dataset.index);
-    if (shots[index]) shots[index].videoFragment = fragmentSelect.value;
+    if (shots[index]) {
+      shots[index].videoFragment = fragmentSelect.value;
+      _applyTimestampOffset(index);
+    }
     return;
   }
 
@@ -308,7 +335,10 @@ shotList.addEventListener('input', (event) => {
   if (!input) return;
   const index = Number(input.dataset.index);
   const field = input.dataset.field;
-  if (shots[index]) shots[index][field] = input.value;
+  if (shots[index]) {
+    shots[index][field] = input.value;
+    if (field === 'timestamp') _applyTimestampOffset(index);
+  }
 });
 
 shotList.addEventListener('mouseover', (event) => {

@@ -39,7 +39,10 @@
   text-decoration: none;
   border-left: 2px solid transparent;
   line-height: 1.4;
-  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  transition:
+    color 0.12s,
+    border-color 0.12s,
+    background 0.12s;
 }
 
 .toc-link:hover {
@@ -152,7 +155,7 @@
 }
 
 .docs-article pre code {
-  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
   font-size: 12.5px;
   color: #e2e8f0;
   background: none;
@@ -161,7 +164,7 @@
 }
 
 .docs-article code {
-  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
   font-size: 12.5px;
   background: #f3f4f6;
   color: #be185d;

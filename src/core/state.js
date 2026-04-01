@@ -19,4 +19,6 @@ export const state = {
   _arrowDrawing:     false,
   _arrowStart:       null,    // { displayX, displayY, canonicalX, canonicalY }
   _arrowPreviewEnd:  null,    // { displayX, displayY }
+  fragmentNames:     [],      // string[] — custom label for each video fragment
+  fragmentOffsets:   [],      // number[] — offset in seconds for each video fragment
 };

@@ -1,4 +1,6 @@
 import { renderShotsList } from '../match/shots.js';
+import { state } from '../core/state.js';
+import { parseTimeToSeconds } from '../core/time.js';
 
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
 
@@ -19,6 +21,13 @@ const VENUE_LABELS = {
   wyjazd: 'Wyjazd',
   neutralne: 'Neutralne',
 };
+
+// ─── Support dialog ───────────────────────────────────────────────────────────
+
+const _supportDialog = document.getElementById('supportDialog');
+document.getElementById('supportBtn').addEventListener('click', () => _supportDialog.showModal());
+document.getElementById('supportDialogClose').addEventListener('click', () => _supportDialog.close());
+_supportDialog.addEventListener('click', (e) => { if (e.target === _supportDialog) _supportDialog.close(); });
 
 // ─── Sidebar toggle ───────────────────────────────────────────────────────────
 
@@ -101,6 +110,7 @@ startBtn.addEventListener('click', () => {
   document.getElementById('noMatchPlaceholder').style.display = 'none';
   startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
   startBtn.classList.add('active');
+  document.dispatchEvent(new CustomEvent('match:activated'));
 });
 
 // ─── Video fragments stepper ──────────────────────────────────────────────────
@@ -117,3 +127,64 @@ document.getElementById('videoFragmentsPlus').addEventListener('click', () => {
   videoFragmentsCount.value = val + 1;
   renderShotsList();
 });
+
+// ─── Video fragments config dialog ───────────────────────────────────────────
+
+const vfdDialog = document.getElementById('videoFragmentsDialog');
+const vfdBody   = document.getElementById('vfdBody');
+
+document.getElementById('videoFragmentsConfigBtn').addEventListener('click', _openVfd);
+document.getElementById('vfdClose').addEventListener('click',  () => vfdDialog.close());
+document.getElementById('vfdCancel').addEventListener('click', () => vfdDialog.close());
+document.getElementById('vfdSave').addEventListener('click', _saveVfd);
+
+vfdDialog.addEventListener('click', e => { if (e.target === vfdDialog) vfdDialog.close(); });
+
+function _openVfd() {
+  const count = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
+  vfdBody.innerHTML = `
+    <div class="vfd-header-row">
+      <span class="vfd-col-label">#</span>
+      <span class="vfd-col-label">Nazwa fragmentu</span>
+      <span class="vfd-col-label vfd-col-offset" title="Czas meczu w momencie startu fragmentu. Wartości ujemne dozwolone (np. -00:05).">Offset meczu <i class="bi bi-info-circle"></i></span>
+    </div>` +
+    Array.from({ length: count }, (_, i) => {
+      const name   = (state.fragmentNames[i]  || '').replace(/"/g, '&quot;');
+      const offset = _secondsToOffsetString(state.fragmentOffsets[i]);
+      return `
+        <div class="vfd-row">
+          <span class="vfd-num">${i + 1}</span>
+          <input type="text" class="vfd-name-input"   data-index="${i}" placeholder="Fragment ${i + 1}" value="${name}"   maxlength="40" />
+          <input type="text" class="vfd-offset-input" data-index="${i}" placeholder="np. 19:54 lub -00:05" value="${offset}" />
+        </div>`;
+    }).join('');
+  vfdDialog.showModal();
+  vfdBody.querySelector('.vfd-name-input')?.focus();
+}
+
+function _saveVfd() {
+  const rows    = vfdBody.querySelectorAll('.vfd-row');
+  const names   = [];
+  const offsets = [];
+  rows.forEach(row => {
+    const i      = parseInt(row.querySelector('.vfd-name-input').dataset.index);
+    names[i]     = row.querySelector('.vfd-name-input').value.trim();
+    const parsed = parseTimeToSeconds(row.querySelector('.vfd-offset-input').value.trim());
+    offsets[i]   = parsed !== null ? parsed : (state.fragmentOffsets[i] ?? null);
+  });
+  state.fragmentNames   = names;
+  state.fragmentOffsets = offsets;
+  vfdDialog.close();
+  renderShotsList();
+}
+
+/** Convert stored seconds (number | null | undefined) back to display string */
+function _secondsToOffsetString(seconds) {
+  if (seconds === null || seconds === undefined || seconds === '') return '';
+  const neg = seconds < 0;
+  const abs = Math.abs(seconds);
+  const m   = Math.floor(abs / 60);
+  const s   = abs % 60;
+  const str = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return neg ? `-${str}` : str;
+}

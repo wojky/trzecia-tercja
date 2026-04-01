@@ -41,7 +41,15 @@ export function exportShotsToCsv() {
     alert('Brak uderzeń do eksportu.');
     return;
   }
+  const { csvContent, filename } = buildCsvData();
+  downloadCsv(filename, csvContent);
+}
 
+/**
+ * Build CSV text + suggested filename without triggering a download.
+ * Used by the Google Drive integration.
+ */
+export function buildCsvData() {
   const opponentNameInput   = document.getElementById('opponentName');
   const matchDateInput      = document.getElementById('matchDate');
   const venueSelect         = document.getElementById('venueSelect');
@@ -55,6 +63,7 @@ export function exportShotsToCsv() {
     'assistPosX', 'assistPosY',
     'assistArrowX1', 'assistArrowY1', 'assistArrowX2', 'assistArrowY2',
     'assistArrowLength',
+    'fragmentNames', 'fragmentOffsets',
   ];
 
   const esc = (value) => {
@@ -95,14 +104,17 @@ export function exportShotsToCsv() {
         const dyM = (shot.assistArrow.y2 - shot.assistArrow.y1) / scaleY;
         return Math.sqrt(dxM * dxM + dyM * dyM).toFixed(2);
       })() : '',
+      index === 0 ? JSON.stringify(state.fragmentNames)   : '',
+      index === 0 ? JSON.stringify(state.fragmentOffsets) : '',
     ];
     lines.push(row.map(esc).join(','));
   });
 
-  const csvContent     = lines.join('\n');
-  const filenameDate   = matchDateInput.value || new Date().toISOString().slice(0, 10);
-  const filenameOpp    = opponentNameInput.value.trim().replace(/[^a-zA-Z0-9\-_]/g, '_') || 'eksport';
-  downloadCsv(`uderzenia-${filenameDate}-${filenameOpp}.csv`, csvContent);
+  const csvContent   = lines.join('\n');
+  const filenameDate = matchDateInput.value || new Date().toISOString().slice(0, 10);
+  const filenameOpp  = opponentNameInput.value.trim().replace(/[^a-zA-Z0-9\-_]/g, '_') || 'eksport';
+  const filename     = `uderzenia-${filenameDate}-${filenameOpp}.csv`;
+  return { csvContent, filename };
 }
 
 // ─── CSV import ───────────────────────────────────────────────────────────────
@@ -200,12 +212,15 @@ export function importFromCsv(text) {
   if (firstRow.matchDate)           matchDateInput.value    = firstRow.matchDate;
   if (firstRow.venue)               { venueSelect.value = firstRow.venue; syncVenueDisplay(firstRow.venue); }
   if (firstRow.videoFragmentsCount) videoFragmentsCount.value = Math.max(1, parseInt(firstRow.videoFragmentsCount) || 1);
+  if (firstRow.fragmentNames)   { try { state.fragmentNames   = JSON.parse(firstRow.fragmentNames);   } catch {} }
+  if (firstRow.fragmentOffsets) { try { state.fragmentOffsets = JSON.parse(firstRow.fragmentOffsets); } catch {} }
 
   validateStart();
   mainLayout.style.display = '';
   document.getElementById('noMatchPlaceholder').style.display = 'none';
   startBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Aktywny';
   startBtn.classList.add('active');
+  document.dispatchEvent(new CustomEvent('match:activated'));
 
   shots.length = 0;
   imported.forEach(s => shots.push(s));

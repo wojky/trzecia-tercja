@@ -4,15 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trzecia Tercja</title>
-    <meta name="description" content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu." />
+    <meta
+      name="description"
+      content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu."
+    />
     <meta name="author" content="Pomorzanin Toruń" />
 
     <!-- Open Graph / WhatsApp / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://wojky.github.io/trzecia-tercja/" />
     <meta property="og:title" content="Trzecia Tercja" />
-    <meta property="og:description" content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu." />
-    <meta property="og:image" content="https://wojky.github.io/trzecia-tercja/og-image.png" />
+    <meta
+      property="og:description"
+      content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu."
+    />
+    <meta
+      property="og:image"
+      content="https://wojky.github.io/trzecia-tercja/og-image.png"
+    />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="pl_PL" />
@@ -20,12 +29,22 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Trzecia Tercja" />
-    <meta name="twitter:description" content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu." />
-    <meta name="twitter:image" content="https://wojky.github.io/trzecia-tercja/og-image.png" />
+    <meta
+      name="twitter:description"
+      content="Narzędzie do analizy boiskowej — mapa uderzeń, xG, statystyki zawodników i symulacja wyniku meczu."
+    />
+    <meta
+      name="twitter:image"
+      content="https://wojky.github.io/trzecia-tercja/og-image.png"
+    />
 
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
+    <!-- Google Identity Services (OAuth 2.0 token flow) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Google API loader (for Picker API) -->
+    <script src="https://apis.google.com/js/api.js" async defer></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -34,11 +53,14 @@
   </head>
   <body>
     <div class="app-shell">
-
       <!-- ─── Sidebar ──────────────────────────────────────── -->
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-top">
-          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Zwiń menu">
+          <button
+            class="sidebar-collapse-btn"
+            id="sidebarCollapseBtn"
+            title="Zwiń menu"
+          >
             <i class="bi bi-layout-sidebar"></i>
           </button>
         </div>
@@ -56,7 +78,6 @@
 
       <!-- ─── Main area ─────────────────────────────────────── -->
       <div class="main-area">
-
         <!-- Top bar -->
         <header class="topbar">
           <div class="topbar-left">
@@ -64,462 +85,675 @@
               <i class="bi bi-list"></i>
             </button>
             <div class="topbar-brand">
-              <svg class="topbar-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                class="topbar-logo"
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <rect width="48" height="48" rx="14" fill="#0f172a" />
-                <rect x="9" y="16" width="7" height="16" rx="2" fill="#1e293b" />
-                <rect x="20" y="11" width="7" height="21" rx="2" fill="#1e293b" />
-                <rect x="31" y="8" width="7" height="24" rx="2" fill="#e11d48" />
+                <rect
+                  x="9"
+                  y="16"
+                  width="7"
+                  height="16"
+                  rx="2"
+                  fill="#1e293b"
+                />
+                <rect
+                  x="20"
+                  y="11"
+                  width="7"
+                  height="21"
+                  rx="2"
+                  fill="#1e293b"
+                />
+                <rect
+                  x="31"
+                  y="8"
+                  width="7"
+                  height="24"
+                  rx="2"
+                  fill="#e11d48"
+                />
                 <circle cx="34.5" cy="6" r="2" fill="#e11d48" />
               </svg>
-              <img src="Logo_Pomorzanin_Torun_stopka.png" alt="Pomorzanin Toruń" class="club-logo topbar-club-logo" />
+              <img
+                src="Logo_Pomorzanin_Torun_stopka.png"
+                alt="Pomorzanin Toruń"
+                class="club-logo topbar-club-logo"
+              />
               <span class="topbar-brand-name">Trzecia Tercja</span>
             </div>
           </div>
           <div class="topbar-right">
-            <button class="btn-support" type="button" id="supportBtn"><i class="bi bi-heart-fill"></i> Wesprzyj</button>
+            <button class="btn-support" type="button" id="supportBtn">
+              <i class="bi bi-heart-fill"></i> Wesprzyj
+            </button>
             <span class="topbar-divider">|</span>
-            <button class="btn-auth btn-login" type="button">Zaloguj się</button>
-            <button class="btn-auth btn-register" type="button">Zarejestruj się</button>
+            <button class="btn-auth btn-login" type="button" id="googleSignInBtn">
+              Zaloguj się przez Google
+            </button>
           </div>
         </header>
 
         <!-- Page content -->
         <main class="page-content">
           <div class="content-inner">
-
-      <div class="match-setup card">
-        <div class="match-setup-fields">
-          <div class="setup-field">
-            <label for="opponentName">Przeciwnik</label>
-            <input id="opponentName" type="text" placeholder="Nazwa drużyny" />
-          </div>
-          <div class="setup-field">
-            <label for="matchDate">Data meczu</label>
-            <input id="matchDate" type="date" />
-          </div>
-          <div class="setup-field">
-            <label>Miejsce</label>
-            <div class="custom-select-wrap" id="venueSelectWrap">
-              <select id="venueSelect" style="display:none" aria-hidden="true">
-                <option value="">— wybierz —</option>
-                <option value="dom">Dom</option>
-                <option value="wyjazd">Wyjazd</option>
-                <option value="neutralne">Neutralne</option>
-              </select>
-              <button type="button" class="custom-select-trigger" id="venueSelectTrigger" aria-haspopup="listbox" aria-expanded="false">
-                <span id="venueSelectLabel">— wybierz —</span>
-                <i class="bi bi-chevron-down custom-select-chevron"></i>
+            <div class="match-setup card">
+              <div class="match-setup-fields">
+                <div class="setup-field">
+                  <label for="opponentName">Przeciwnik</label>
+                  <input
+                    id="opponentName"
+                    type="text"
+                    placeholder="Nazwa drużyny"
+                  />
+                </div>
+                <div class="setup-field">
+                  <label for="matchDate">Data meczu</label>
+                  <input id="matchDate" type="date" />
+                </div>
+                <div class="setup-field">
+                  <label>Miejsce</label>
+                  <div class="custom-select-wrap" id="venueSelectWrap">
+                    <select
+                      id="venueSelect"
+                      style="display: none"
+                      aria-hidden="true"
+                    >
+                      <option value="">— wybierz —</option>
+                      <option value="dom">Dom</option>
+                      <option value="wyjazd">Wyjazd</option>
+                      <option value="neutralne">Neutralne</option>
+                    </select>
+                    <button
+                      type="button"
+                      class="custom-select-trigger"
+                      id="venueSelectTrigger"
+                      aria-haspopup="listbox"
+                      aria-expanded="false"
+                    >
+                      <span id="venueSelectLabel">— wybierz —</span>
+                      <i class="bi bi-chevron-down custom-select-chevron"></i>
+                    </button>
+                    <ul
+                      class="custom-select-dropdown"
+                      id="venueSelectDropdown"
+                      role="listbox"
+                      hidden
+                    >
+                      <li
+                        class="custom-select-option"
+                        data-value=""
+                        role="option"
+                      >
+                        — wybierz —
+                      </li>
+                      <li
+                        class="custom-select-option"
+                        data-value="dom"
+                        role="option"
+                      >
+                        <i class="bi bi-house-fill"></i> Dom
+                      </li>
+                      <li
+                        class="custom-select-option"
+                        data-value="wyjazd"
+                        role="option"
+                      >
+                        <i class="bi bi-bus-front-fill"></i> Wyjazd
+                      </li>
+                      <li
+                        class="custom-select-option"
+                        data-value="neutralne"
+                        role="option"
+                      >
+                        <i class="bi bi-geo-alt-fill"></i> Neutralne
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="setup-field">
+                  <label for="videoFragmentsCount">Fragmenty wideo</label>
+                  <div class="stepper-with-config">
+                    <div class="number-stepper">
+                      <button
+                        type="button"
+                        id="videoFragmentsMinus"
+                        class="stepper-btn"
+                        aria-label="Zmniejsz"
+                      >
+                        <i class="bi bi-dash"></i>
+                      </button>
+                      <input
+                        id="videoFragmentsCount"
+                        type="number"
+                        min="1"
+                        value="1"
+                        inputmode="numeric"
+                      />
+                      <button
+                        type="button"
+                        id="videoFragmentsPlus"
+                        class="stepper-btn"
+                        aria-label="Zwiększ"
+                      >
+                        <i class="bi bi-plus"></i>
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      id="videoFragmentsConfigBtn"
+                      class="stepper-config-btn"
+                      title="Konfiguruj fragmenty wideo"
+                      aria-label="Konfiguruj fragmenty wideo"
+                    >
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button id="startBtn" type="button" disabled>
+                <i class="bi bi-play-fill"></i> Start
               </button>
-              <ul class="custom-select-dropdown" id="venueSelectDropdown" role="listbox" hidden>
-                <li class="custom-select-option" data-value="" role="option">— wybierz —</li>
-                <li class="custom-select-option" data-value="dom" role="option"><i class="bi bi-house-fill"></i> Dom</li>
-                <li class="custom-select-option" data-value="wyjazd" role="option"><i class="bi bi-bus-front-fill"></i> Wyjazd</li>
-                <li class="custom-select-option" data-value="neutralne" role="option"><i class="bi bi-geo-alt-fill"></i> Neutralne</li>
-              </ul>
-            </div>
-          </div>
-          <div class="setup-field">
-            <label for="videoFragmentsCount">Fragmenty wideo</label>
-            <div class="number-stepper">
-              <button type="button" id="videoFragmentsMinus" class="stepper-btn" aria-label="Zmniejsz"><i class="bi bi-dash"></i></button>
-              <input id="videoFragmentsCount" type="number" min="1" value="1" inputmode="numeric" />
-              <button type="button" id="videoFragmentsPlus" class="stepper-btn" aria-label="Zwiększ"><i class="bi bi-plus"></i></button>
-            </div>
-          </div>
-        </div>
-        <button id="startBtn" type="button" disabled>
-          <i class="bi bi-play-fill"></i> Start
-        </button>
-        <button id="setupImportBtn" type="button">
-          <i class="bi bi-upload"></i> Wczytaj CSV
-        </button>
-      </div>
-
-      <div class="no-match-placeholder" id="noMatchPlaceholder">
-        <i class="bi bi-flag-fill no-match-icon"></i>
-        <p class="no-match-title">Brak aktywnego meczu</p>
-        <p class="no-match-sub">
-          Uzupełnij dane powyżej i kliknij <strong>Start</strong>, lub wczytaj
-          istniejący mecz przez <strong>Wczytaj CSV</strong>.
-        </p>
-      </div>
-
-      <div class="layout" id="mainLayout" style="display: none">
-        <div class="card">
-          <div class="card-tabs">
-            <button class="card-tab active" id="tabMap" type="button">
-              <i class="bi bi-map"></i> Mapa
-            </button>
-            <button class="card-tab" id="tabStats" type="button">
-              <i class="bi bi-bar-chart-line"></i> Statystyki
-            </button>
-            <button class="card-tab" id="tabPlayers" type="button">
-              <i class="bi bi-people"></i> Zawodnicy
-            </button>
-            <button class="card-tab" id="tabSim" type="button">
-              <i class="bi bi-lightning-charge"></i> Symulacja
-            </button>
-            <button class="card-tab" id="tabSettings" type="button">
-              <i class="bi bi-gear"></i> Ustawienia
-            </button>
-          </div>
-          <div id="mapPanel">
-            <div class="filters-panel">
-              <div class="filter-field">
-                <label for="teamFilter">Pokaż uderzenia</label>
-                <select id="teamFilter">
-                  <option value="all">Wszystkie</option>
-                  <option value="ourTeam">Nasz zespół</option>
-                  <option value="opponent">Przeciwnik</option>
-                </select>
-              </div>
-              <div id="assistModeBar">
-                <button
-                  type="button"
-                  class="assist-mode-bar-btn"
-                  id="assistModePersonBtn"
-                  title="Zaznacz asystującego"
-                >
-                  <i class="bi bi-person-fill"></i>
-                </button>
-                <button
-                  type="button"
-                  class="assist-mode-bar-btn"
-                  id="assistModeArrowBtn"
-                  title="Narysuj podanie"
-                >
-                  <i class="bi bi-arrow-right"></i>
-                </button>
-                <button
-                  type="button"
-                  class="assist-mode-bar-btn clear-btn"
-                  id="assistModeClearBtn"
-                  title="Usuń dane asysty"
-                >
-                  <i class="bi bi-trash3"></i>
-                </button>
-                <button
-                  type="button"
-                  class="assist-mode-bar-btn cancel-btn"
-                  id="assistModeCancelBtn"
-                  title="Anuluj tryb rysowania asysty"
-                >
-                  <i class="bi bi-x-lg"></i>
-                </button>
-              </div>
-            </div>
-            <canvas id="pitchCanvas" width="800" height="470"></canvas>
-            <div class="toolbar">
-              <div class="toolbar-actions">
-                <button id="readModeBtn" type="button">
-                  <i class="bi bi-cursor"></i> Tryb odczytu
-                </button>
-                <button id="mirrorBtn" type="button">
-                  <i class="bi bi-arrow-up-circle-fill"></i> Kierunek ataku:
-                  góra
-                </button>
-                <button id="exportBtn" type="button">
-                  <i class="bi bi-download"></i> Eksportuj CSV
-                </button>
-                <input
-                  id="importFileInput"
-                  type="file"
-                  accept=".csv"
-                  style="display: none"
-                />
-              </div>
-            </div>
-          </div>
-          <!-- /mapPanel -->
-
-          <div id="statsPanel" class="stats-panel">
-            <div class="stats-summary">
-              <div class="stats-team-block our">
-                <div class="stats-team-title">Nasz zespół</div>
-                <div class="stats-score">
-                  <span class="stats-score-number" id="s-our-goals">-</span>
-                  <span class="stats-score-label">gole</span>
-                  <span class="stats-score-assists" id="s-our-assists"
-                    >- asyst</span
-                  >
-                </div>
-                <div class="stats-row">
-                  <span>xG</span><strong id="s-our-xg">-</strong>
-                </div>
-                <div class="stats-row">
-                  <span>xA</span><strong id="s-our-xa">-</strong>
-                </div>
-                <div class="stats-row">
-                  <span>Uderzenia</span><strong id="s-our-shots">-</strong>
-                </div>
-                <div class="stats-row">
-                  <span>xG / uderzenie</span><strong id="s-our-xgps">-</strong>
-                </div>
-              </div>
-              <div class="stats-team-block opp">
-                <div class="stats-team-title">Przeciwnik</div>
-                <div class="stats-score">
-                  <span class="stats-score-number" id="s-opp-goals">-</span>
-                  <span class="stats-score-label">gole</span>
-                  <span class="stats-score-assists" id="s-opp-assists"
-                    >- asyst</span
-                  >
-                </div>
-                <div class="stats-row">
-                  <span>xG</span><strong id="s-opp-xg">-</strong>
-                </div>
-                <div class="stats-row">
-                  <span>xA</span><strong id="s-opp-xa">-</strong>
-                </div>
-                <div class="stats-row">
-                  <span>Uderzenia</span><strong id="s-opp-shots">-</strong>
-                </div>
-                <div class="stats-row">
-                  <span>xG / uderzenie</span><strong id="s-opp-xgps">-</strong>
-                </div>
-              </div>
-            </div>
-            <div class="stats-status-section">
-              <div class="stats-summary">
-                <div>
-                  <div class="stats-status-title" style="color: #e11d48">
-                    Nasz zespół — statusy
-                  </div>
-                  <div class="stats-status-grid" id="s-status-grid-our"></div>
-                </div>
-                <div>
-                  <div class="stats-status-title" style="color: #2563eb">
-                    Przeciwnik — statusy
-                  </div>
-                  <div class="stats-status-grid" id="s-status-grid-opp"></div>
-                </div>
-              </div>
-            </div>
-            <div class="stats-chart-title">Rozkład uderzeń w czasie</div>
-            <div id="shotDistLegend" class="shot-dist-legend"></div>
-            <canvas
-              id="shotDistributionChart"
-              style="max-height: 220px"
-            ></canvas>
-            <div class="stats-chart-title">
-              Kumulatywne xG na osi czasu meczu
-            </div>
-            <canvas id="xgTimelineChart" style="max-height: 260px"></canvas>
-          </div>
-
-          <div id="playersPanel" class="stats-panel">
-            <div class="players-table-wrap">
-              <table class="players-table" id="playersTable">
-                <thead>
-                  <tr>
-                    <th class="cmp-check-col"></th>
-                    <th class="num">Nr</th>
-                    <th>Imię i nazwisko</th>
-                    <th class="num" style="text-transform: none">xG</th>
-                    <th class="num" style="text-transform: none">xA</th>
-                    <th class="num">Cel.</th>
-                    <th class="num">Niecel.</th>
-                    <th class="num">Zablok.</th>
-                    <th class="num">Czas gry</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="playersTableBody"></tbody>
-              </table>
-            </div>
-            <!-- ─── Porównanie zawodników ────────────────────────────── -->
-            <div id="compareSection" style="display: none; margin-top: 28px">
-              <div class="stats-chart-title">Porównanie zawodników</div>
-              <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
-                Zaznacz od 2 do 3 zawodników w tabeli, aby zobaczyć ich
-                porównanie na wykresie radarowym oraz w tabeli.
-                <strong>Podświetlona</strong> komórka w tabeli oznacza najlepszy
-                wynik w danej kategorii.
-              </p>
-              <p
-                id="compareHint"
-                style="font-size: 12px; color: #9ca3af; margin: 8px 0 0"
-              >
-                Zaznacz co najmniej 2 zawodników, aby wyświetlić porównanie.
-              </p>
-              <div
-                id="compareChartWrap"
-                style="display: none; margin-top: 20px"
-              >
-                <div class="cmp-side-by-side">
-                  <div class="cmp-radar-wrap">
-                    <canvas id="compareRadarChart"></canvas>
-                  </div>
-                  <div id="compareTable" class="cmp-table-wrap"></div>
-                </div>
-              </div>
-            </div>
-
-            <div id="collabSection" style="display: none; margin-top: 28px">
-              <div class="stats-chart-title">Współpraca zawodników</div>
-              <p style="font-size: 12px; color: #6b7280; margin: 4px 0 12px">
-                Liczba na przecięciu wiersza i kolumny oznacza łączną liczbę
-                akcji, w których zawodnik z wiersza i zawodnik z kolumny brali
-                udział razem (strzał ↔ asysta, w dowolnym kierunku).
-                <span
-                  style="
-                    display: inline-block;
-                    background: rgba(225, 29, 72, 0.08);
-                    color: #e11d48;
-                    font-weight: 700;
-                    border-radius: 4px;
-                    padding: 0 6px;
-                    margin: 0 2px;
-                  "
-                  >N</span
-                >
-                = N wspólnych akcji &nbsp;·&nbsp;
-                <span style="color: #d1d5db; font-weight: 700">·</span> = brak
-                współpracy <br /><strong
-                  >Kierunek odczytu: wiersz → kolumna</strong
-                >
-                (np. wiersz 9, kolumna 7 = nr 9 działał w kierunku nr 7)
-              </p>
-              <div class="collab-mode-toggle">
-                <label class="collab-mode-label">
-                  <input
-                    type="radio"
-                    name="collabMode"
-                    value="ps"
-                  />
-                  asysta → uderzenie
-                </label>
-                <label class="collab-mode-label">
-                  <input
-                    type="radio"
-                    name="collabMode"
-                    value="sp"
-                  />
-                  uderzenie ← asysta
-                </label>
-                <label class="collab-mode-label">
-                  <input
-                    type="radio"
-                    name="collabMode"
-                    value="combined"
-                    checked
-                  />
-                  razem
-                </label>
-              </div>
-              <div class="players-table-wrap">
-                <div id="collabMatrix"></div>
-              </div>
-            </div>
-          </div>
-          <!-- /#playersPanel -->
-
-          <div id="simPanel" class="stats-panel">
-            <div id="sim-empty" class="sim-empty" style="display: none">
-              Brak uderzeń z wartościami xG &mdash; dodaj uderzenia, aby
-              uruchomić symulację.
-            </div>
-            <div id="sim-content">
-              <div class="sim-result-bar-wrap">
-                <div class="sim-result-segment sim-seg-win" id="sim-win-bar">
-                  <span>Wygrana</span><strong id="sim-win-pct">-</strong>
-                </div>
-                <div class="sim-result-segment sim-seg-draw" id="sim-draw-bar">
-                  <span>Remis</span><strong id="sim-draw-pct">-</strong>
-                </div>
-                <div class="sim-result-segment sim-seg-loss" id="sim-loss-bar">
-                  <span>Porażka</span><strong id="sim-loss-pct">-</strong>
-                </div>
-              </div>
-              <div class="stats-summary">
-                <div class="stats-team-block our">
-                  <div class="stats-team-title">Nasz zespół</div>
-                  <div class="stats-row">
-                    <span>Oczekiwane gole</span
-                    ><strong id="sim-our-xg">-</strong>
-                  </div>
-                  <div class="stats-row">
-                    <span>Odch. std.</span><strong id="sim-our-std">-</strong>
-                  </div>
-                  <div class="stats-row">
-                    <span>Pkt / mecz</span><strong id="sim-our-ppg">-</strong>
-                  </div>
-                </div>
-                <div class="stats-team-block opp">
-                  <div class="stats-team-title">Przeciwnik</div>
-                  <div class="stats-row">
-                    <span>Oczekiwane gole</span
-                    ><strong id="sim-opp-xg">-</strong>
-                  </div>
-                  <div class="stats-row">
-                    <span>Odch. std.</span><strong id="sim-opp-std">-</strong>
-                  </div>
-                  <div class="stats-row">
-                    <span>Pkt / mecz</span><strong id="sim-opp-ppg">-</strong>
-                  </div>
-                </div>
-              </div>
-              <div class="stats-chart-title">
-                Rozkład prawdopodobieństwa liczby goli
-              </div>
-              <canvas
-                id="goalDistChart"
-                style="max-height: 220px; margin-bottom: 20px"
-              ></canvas>
-              <div class="stats-chart-title">Rozkład różnicy bramek</div>
-              <canvas id="goalDiffChart" style="max-height: 180px"></canvas>
-            </div>
-          </div>
-          <div id="settingsPanel" class="stats-panel"></div>
-        </div>
-
-        <div class="card" id="shotListCard">
-          <div class="shots-header">
-            <div class="shots-header-left">
-              <h2>Lista uderzeń</h2>
-              <div class="counter" id="counter">0</div>
-            </div>
-            <div class="shots-header-menu-wrap">
-              <button
-                type="button"
-                id="shotListMenuBtn"
-                class="shots-header-menu-btn"
-                title="Opcje"
-              >
-                <i class="bi bi-three-dots-vertical"></i>
+              <button id="setupImportBtn" type="button">
+                <i class="bi bi-upload"></i> Wczytaj CSV
               </button>
-              <div id="shotListMenu" class="shots-header-dropdown" hidden>
-                <button
-                  type="button"
-                  id="clearBtn"
-                  class="shots-header-dropdown-item danger"
-                >
-                  <i class="bi bi-trash3"></i> Wyczyść wszystkie uderzenia
-                </button>
+            </div>
+
+            <div class="no-match-placeholder" id="noMatchPlaceholder">
+              <i class="bi bi-flag-fill no-match-icon"></i>
+              <p class="no-match-title">Brak aktywnego meczu</p>
+              <p class="no-match-sub">
+                Uzupełnij dane powyżej i kliknij <strong>Start</strong>, lub
+                wczytaj istniejący mecz przez <strong>Wczytaj CSV</strong>.
+              </p>
+            </div>
+
+            <div class="layout" id="mainLayout" style="display: none">
+              <div class="card">
+                <div class="card-tabs">
+                  <button class="card-tab active" id="tabMap" type="button">
+                    <i class="bi bi-map"></i> Mapa
+                  </button>
+                  <button class="card-tab" id="tabStats" type="button">
+                    <i class="bi bi-bar-chart-line"></i> Statystyki
+                  </button>
+                  <button class="card-tab" id="tabPlayers" type="button">
+                    <i class="bi bi-people"></i> Zawodnicy
+                  </button>
+                  <button class="card-tab" id="tabSim" type="button">
+                    <i class="bi bi-lightning-charge"></i> Symulacja
+                  </button>
+                  <button class="card-tab" id="tabSettings" type="button">
+                    <i class="bi bi-gear"></i> Ustawienia
+                  </button>
+                </div>
+                <div id="mapPanel">
+                  <div class="filters-panel">
+                    <div class="filter-field">
+                      <label for="teamFilter">Pokaż uderzenia</label>
+                      <select id="teamFilter">
+                        <option value="all">Wszystkie</option>
+                        <option value="ourTeam">Nasz zespół</option>
+                        <option value="opponent">Przeciwnik</option>
+                      </select>
+                    </div>
+                    <div id="assistModeBar">
+                      <button
+                        type="button"
+                        class="assist-mode-bar-btn"
+                        id="assistModePersonBtn"
+                        title="Zaznacz asystującego"
+                      >
+                        <i class="bi bi-person-fill"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="assist-mode-bar-btn"
+                        id="assistModeArrowBtn"
+                        title="Narysuj podanie"
+                      >
+                        <i class="bi bi-arrow-right"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="assist-mode-bar-btn clear-btn"
+                        id="assistModeClearBtn"
+                        title="Usuń dane asysty"
+                      >
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                      <button
+                        type="button"
+                        class="assist-mode-bar-btn cancel-btn"
+                        id="assistModeCancelBtn"
+                        title="Anuluj tryb rysowania asysty"
+                      >
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <canvas id="pitchCanvas" width="800" height="470"></canvas>
+                  <div class="toolbar">
+                    <div class="toolbar-actions">
+                      <button id="readModeBtn" type="button">
+                        <i class="bi bi-cursor"></i> Tryb odczytu
+                      </button>
+                      <button id="mirrorBtn" type="button">
+                        <i class="bi bi-arrow-up-circle-fill"></i> Kierunek
+                        ataku: góra
+                      </button>
+                      <button id="exportBtn" type="button">
+                        <i class="bi bi-download"></i> Eksportuj CSV
+                      </button>
+                      <input
+                        id="importFileInput"
+                        type="file"
+                        accept=".csv"
+                        style="display: none"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <!-- /mapPanel -->
+
+                <div id="statsPanel" class="stats-panel">
+                  <div class="stats-summary">
+                    <div class="stats-team-block our">
+                      <div class="stats-team-title">Nasz zespół</div>
+                      <div class="stats-score">
+                        <span class="stats-score-number" id="s-our-goals"
+                          >-</span
+                        >
+                        <span class="stats-score-label">gole</span>
+                        <span class="stats-score-assists" id="s-our-assists"
+                          >- asyst</span
+                        >
+                      </div>
+                      <div class="stats-row">
+                        <span>xG</span><strong id="s-our-xg">-</strong>
+                      </div>
+                      <div class="stats-row">
+                        <span>xA</span><strong id="s-our-xa">-</strong>
+                      </div>
+                      <div class="stats-row">
+                        <span>Uderzenia</span
+                        ><strong id="s-our-shots">-</strong>
+                      </div>
+                      <div class="stats-row">
+                        <span>xG / uderzenie</span
+                        ><strong id="s-our-xgps">-</strong>
+                      </div>
+                    </div>
+                    <div class="stats-team-block opp">
+                      <div class="stats-team-title">Przeciwnik</div>
+                      <div class="stats-score">
+                        <span class="stats-score-number" id="s-opp-goals"
+                          >-</span
+                        >
+                        <span class="stats-score-label">gole</span>
+                        <span class="stats-score-assists" id="s-opp-assists"
+                          >- asyst</span
+                        >
+                      </div>
+                      <div class="stats-row">
+                        <span>xG</span><strong id="s-opp-xg">-</strong>
+                      </div>
+                      <div class="stats-row">
+                        <span>xA</span><strong id="s-opp-xa">-</strong>
+                      </div>
+                      <div class="stats-row">
+                        <span>Uderzenia</span
+                        ><strong id="s-opp-shots">-</strong>
+                      </div>
+                      <div class="stats-row">
+                        <span>xG / uderzenie</span
+                        ><strong id="s-opp-xgps">-</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="stats-status-section">
+                    <div class="stats-summary">
+                      <div>
+                        <div class="stats-status-title" style="color: #e11d48">
+                          Nasz zespół — statusy
+                        </div>
+                        <div
+                          class="stats-status-grid"
+                          id="s-status-grid-our"
+                        ></div>
+                      </div>
+                      <div>
+                        <div class="stats-status-title" style="color: #2563eb">
+                          Przeciwnik — statusy
+                        </div>
+                        <div
+                          class="stats-status-grid"
+                          id="s-status-grid-opp"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="stats-chart-title">Rozkład uderzeń w czasie</div>
+                  <div id="shotDistLegend" class="shot-dist-legend"></div>
+                  <canvas
+                    id="shotDistributionChart"
+                    style="max-height: 220px"
+                  ></canvas>
+                  <div class="stats-chart-title">
+                    Kumulatywne xG na osi czasu meczu
+                  </div>
+                  <canvas
+                    id="xgTimelineChart"
+                    style="max-height: 260px"
+                  ></canvas>
+                </div>
+
+                <div id="playersPanel" class="stats-panel">
+                  <div class="players-table-wrap">
+                    <table class="players-table" id="playersTable">
+                      <thead>
+                        <tr>
+                          <th class="cmp-check-col"></th>
+                          <th class="num">Nr</th>
+                          <th>Imię i nazwisko</th>
+                          <th class="num" style="text-transform: none">xG</th>
+                          <th class="num" style="text-transform: none">xA</th>
+                          <th class="num">Cel.</th>
+                          <th class="num">Niecel.</th>
+                          <th class="num">Zablok.</th>
+                          <th class="num">Czas gry</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="playersTableBody"></tbody>
+                    </table>
+                  </div>
+                  <!-- ─── Porównanie zawodników ────────────────────────────── -->
+                  <div
+                    id="compareSection"
+                    style="display: none; margin-top: 28px"
+                  >
+                    <div class="stats-chart-title">Porównanie zawodników</div>
+                    <p
+                      style="
+                        font-size: 12px;
+                        color: #6b7280;
+                        margin: 4px 0 12px;
+                      "
+                    >
+                      Zaznacz od 2 do 3 zawodników w tabeli, aby zobaczyć ich
+                      porównanie na wykresie radarowym oraz w tabeli.
+                      <strong>Podświetlona</strong> komórka w tabeli oznacza
+                      najlepszy wynik w danej kategorii.
+                    </p>
+                    <p
+                      id="compareHint"
+                      style="font-size: 12px; color: #9ca3af; margin: 8px 0 0"
+                    >
+                      Zaznacz co najmniej 2 zawodników, aby wyświetlić
+                      porównanie.
+                    </p>
+                    <div
+                      id="compareChartWrap"
+                      style="display: none; margin-top: 20px"
+                    >
+                      <div class="cmp-side-by-side">
+                        <div class="cmp-radar-wrap">
+                          <canvas id="compareRadarChart"></canvas>
+                        </div>
+                        <div id="compareTable" class="cmp-table-wrap"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    id="collabSection"
+                    style="display: none; margin-top: 28px"
+                  >
+                    <div class="stats-chart-title">Współpraca zawodników</div>
+                    <p
+                      style="
+                        font-size: 12px;
+                        color: #6b7280;
+                        margin: 4px 0 12px;
+                      "
+                    >
+                      Liczba na przecięciu wiersza i kolumny oznacza łączną
+                      liczbę akcji, w których zawodnik z wiersza i zawodnik z
+                      kolumny brali udział razem (strzał ↔ asysta, w dowolnym
+                      kierunku).
+                      <span
+                        style="
+                          display: inline-block;
+                          background: rgba(225, 29, 72, 0.08);
+                          color: #e11d48;
+                          font-weight: 700;
+                          border-radius: 4px;
+                          padding: 0 6px;
+                          margin: 0 2px;
+                        "
+                        >N</span
+                      >
+                      = N wspólnych akcji &nbsp;·&nbsp;
+                      <span style="color: #d1d5db; font-weight: 700">·</span> =
+                      brak współpracy <br /><strong
+                        >Kierunek odczytu: wiersz → kolumna</strong
+                      >
+                      (np. wiersz 9, kolumna 7 = nr 9 działał w kierunku nr 7)
+                    </p>
+                    <div class="collab-mode-toggle">
+                      <label class="collab-mode-label">
+                        <input type="radio" name="collabMode" value="ps" />
+                        asysta → uderzenie
+                      </label>
+                      <label class="collab-mode-label">
+                        <input type="radio" name="collabMode" value="sp" />
+                        uderzenie ← asysta
+                      </label>
+                      <label class="collab-mode-label">
+                        <input
+                          type="radio"
+                          name="collabMode"
+                          value="combined"
+                          checked
+                        />
+                        razem
+                      </label>
+                    </div>
+                    <div class="players-table-wrap">
+                      <div id="collabMatrix"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /#playersPanel -->
+
+                <div id="simPanel" class="stats-panel">
+                  <div id="sim-empty" class="sim-empty" style="display: none">
+                    Brak uderzeń z wartościami xG &mdash; dodaj uderzenia, aby
+                    uruchomić symulację.
+                  </div>
+                  <div id="sim-content">
+                    <div class="sim-result-bar-wrap">
+                      <div
+                        class="sim-result-segment sim-seg-win"
+                        id="sim-win-bar"
+                      >
+                        <span>Wygrana</span><strong id="sim-win-pct">-</strong>
+                      </div>
+                      <div
+                        class="sim-result-segment sim-seg-draw"
+                        id="sim-draw-bar"
+                      >
+                        <span>Remis</span><strong id="sim-draw-pct">-</strong>
+                      </div>
+                      <div
+                        class="sim-result-segment sim-seg-loss"
+                        id="sim-loss-bar"
+                      >
+                        <span>Porażka</span><strong id="sim-loss-pct">-</strong>
+                      </div>
+                    </div>
+                    <div class="stats-summary">
+                      <div class="stats-team-block our">
+                        <div class="stats-team-title">Nasz zespół</div>
+                        <div class="stats-row">
+                          <span>Oczekiwane gole</span
+                          ><strong id="sim-our-xg">-</strong>
+                        </div>
+                        <div class="stats-row">
+                          <span>Odch. std.</span
+                          ><strong id="sim-our-std">-</strong>
+                        </div>
+                        <div class="stats-row">
+                          <span>Pkt / mecz</span
+                          ><strong id="sim-our-ppg">-</strong>
+                        </div>
+                      </div>
+                      <div class="stats-team-block opp">
+                        <div class="stats-team-title">Przeciwnik</div>
+                        <div class="stats-row">
+                          <span>Oczekiwane gole</span
+                          ><strong id="sim-opp-xg">-</strong>
+                        </div>
+                        <div class="stats-row">
+                          <span>Odch. std.</span
+                          ><strong id="sim-opp-std">-</strong>
+                        </div>
+                        <div class="stats-row">
+                          <span>Pkt / mecz</span
+                          ><strong id="sim-opp-ppg">-</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="stats-chart-title">
+                      Rozkład prawdopodobieństwa liczby goli
+                    </div>
+                    <canvas
+                      id="goalDistChart"
+                      style="max-height: 220px; margin-bottom: 20px"
+                    ></canvas>
+                    <div class="stats-chart-title">Rozkład różnicy bramek</div>
+                    <canvas
+                      id="goalDiffChart"
+                      style="max-height: 180px"
+                    ></canvas>
+                  </div>
+                </div>
+                <div id="settingsPanel" class="stats-panel"></div>
+              </div>
+
+              <div class="card" id="shotListCard">
+                <div class="shots-header">
+                  <div class="shots-header-left">
+                    <h2>Lista uderzeń</h2>
+                    <div class="counter" id="counter">0</div>
+                  </div>
+                  <div class="shots-header-menu-wrap">
+                    <button
+                      type="button"
+                      id="shotListMenuBtn"
+                      class="shots-header-menu-btn"
+                      title="Opcje"
+                    >
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <div id="shotListMenu" class="shots-header-dropdown" hidden>
+                      <button
+                        type="button"
+                        id="clearBtn"
+                        class="shots-header-dropdown-item danger"
+                      >
+                        <i class="bi bi-trash3"></i> Wyczyść wszystkie uderzenia
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div id="shotList" class="shot-list"></div>
               </div>
             </div>
           </div>
-          <div id="shotList" class="shot-list"></div>
-        </div>
-      </div>
-          </div><!-- /content-inner -->
+          <!-- /content-inner -->
 
           <!-- ─── Docs panel ─────────────────────────────── -->
-          <div id="docsPanel" class="docs-panel" style="display:none">
+          <div id="docsPanel" class="docs-panel" style="display: none">
             <nav class="docs-toc" id="docsToc"></nav>
             <article class="docs-article" id="docsArticle">
               <div class="docs-loading">Ładowanie dokumentacji…</div>
             </article>
           </div>
-
-        </main><!-- /page-content -->
-      </div><!-- /main-area -->
-    </div><!-- /app-shell -->
+        </main>
+        <!-- /page-content -->
+      </div>
+      <!-- /main-area -->
+    </div>
+    <!-- /app-shell -->
 
     <div id="assistToast">
       <i class="bi bi-pencil"></i> <span id="assistToastMsg"></span>
     </div>
     <script type="module" src="src/main.js"></script>
+
+    <dialog id="supportDialog" aria-labelledby="supportDialogTitle">
+      <div class="player-dialog-header">
+        <div class="player-dialog-title">
+          <i class="bi bi-heart-fill" style="color:#e11d48; margin-right:6px;"></i>
+          <span id="supportDialogTitle" style="font-size:16px; font-weight:700; color:#111827;">Wesprzyj projekt</span>
+        </div>
+        <button class="player-dialog-close" id="supportDialogClose" aria-label="Zamknij">×</button>
+      </div>
+      <div class="player-dialog-body" style="padding: 16px 20px 20px;">
+        <p style="font-size:14px; font-weight:600; color:#111827; margin:0 0 8px;">Trzecia Tercja jest i pozostanie bezpłatna.</p>
+        <p style="font-size:13px; color:#6b7280; margin:0 0 20px; line-height:1.65;">
+          Buduję ją sam, w wolnym czasie — żeby każdy trener, niezależnie od budżetu klubu,
+          miał dostęp do profesjonalnej analizy meczowej. Jeśli narzędzie Ci pomaga
+          i chcesz wesprzeć jego dalszy rozwój, postaw mi kawę. Każde wsparcie
+          daje mi motywację do kolejnych funkcji. Dziękuję!
+        </p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <a href="https://buycoffee.to/kamil-wojkowski?coffeeSize=small"
+             class="coffee-tile"
+             target="_blank" rel="noopener">
+            <img src="https://buycoffee.to/static/img/icons/coffee-small.svg" alt="" style="width:28px;height:28px;flex-shrink:0;" />
+            <span style="font-size:14px;font-weight:600;">Mała kawa &mdash; 5 zł</span>
+          </a>
+          <a href="https://buycoffee.to/kamil-wojkowski?coffeeSize=medium"
+             class="coffee-tile"
+             target="_blank" rel="noopener">
+            <img src="https://buycoffee.to/static/img/icons/coffee-medium.svg" alt="" style="width:28px;height:28px;flex-shrink:0;" />
+            <span style="font-size:14px;font-weight:600;">Średnia kawa &mdash; 10 zł</span>
+          </a>
+          <a href="https://buycoffee.to/kamil-wojkowski?coffeeSize=large"
+             class="coffee-tile"
+             target="_blank" rel="noopener">
+            <img src="https://buycoffee.to/static/img/icons/coffee-large.svg" alt="" style="width:28px;height:28px;flex-shrink:0;" />
+            <span style="font-size:14px;font-weight:600;">Duża kawa &mdash; 20 zł</span>
+          </a>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="videoFragmentsDialog" aria-labelledby="vfdTitle">
+      <div class="vfd-header">
+        <span class="vfd-title" id="vfdTitle"
+          ><i class="bi bi-film"></i> Fragmenty wideo</span
+        >
+        <button class="player-dialog-close" id="vfdClose" aria-label="Zamknij">
+          &times;
+        </button>
+      </div>
+      <div class="vfd-body" id="vfdBody"></div>
+      <div class="vfd-footer">
+        <button type="button" id="vfdSave" class="vfd-save-btn">
+          <i class="bi bi-check-lg"></i> Zapisz
+        </button>
+        <button type="button" id="vfdCancel" class="vfd-cancel-btn">
+          Anuluj
+        </button>
+      </div>
+    </dialog>
 
     <dialog id="playerDialog">
       <div class="player-dialog-header">

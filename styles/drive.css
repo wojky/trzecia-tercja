@@ -1,0 +1,275 @@
+/* ─────────────────────────────────────────────────────────
+   drive.css — Google Auth topbar widget + Drive toast
+   ───────────────────────────────────────────────────────── */
+
+/* ─── Global Drive loader overlay ────────────────────────────────────────────── */
+#driveLoader {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+#driveLoader.drive-loader-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.drive-loader-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #111827;
+  border-radius: 50%;
+  animation: drive-spin 0.7s linear infinite;
+}
+
+.drive-loader-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.01em;
+}
+
+@keyframes drive-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Signed-in user widget ─────────────────────────────── */
+.gauth-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gauth-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #e5e7eb;
+}
+
+.gauth-avatar-fallback {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  flex-shrink: 0;
+  border: 1.5px solid #d1d5db;
+}
+
+.gauth-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Drive action buttons ──────────────────────────────── */
+.gauth-drive-save-btn,
+.gauth-drive-load-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.gauth-drive-save-btn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.gauth-drive-load-btn:hover {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.gauth-drive-save-btn:disabled,
+.gauth-drive-load-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Sign-out button ────────────────────────────────────── */
+.gauth-signout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #9ca3af;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.gauth-signout-btn:hover {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #e11d48;
+}
+
+/* ─── Loading spinner state ──────────────────────────────── */
+.drive-btn-loading {
+  pointer-events: none;
+  opacity: 0.6;
+  position: relative;
+}
+
+.drive-btn-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Toast notification ─────────────────────────────────── */
+#driveToast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #111827;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+  max-width: 340px;
+}
+
+#driveToast.drive-toast-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#driveToast.drive-toast-error {
+  background: #dc2626;
+}
+
+/* ─── Overwrite confirm dialog ───────────────────────────────────────────────── */
+.drive-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.drive-confirm-dialog {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px 28px 20px;
+  max-width: 380px;
+  width: calc(100% - 32px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.drive-confirm-msg {
+  font-size: 14px;
+  color: #374151;
+  margin: 0 0 20px;
+  line-height: 1.55;
+}
+
+.drive-confirm-msg strong {
+  color: #111827;
+  word-break: break-all;
+}
+
+.drive-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.drive-confirm-cancel,
+.drive-confirm-ok {
+  padding: 7px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.drive-confirm-cancel {
+  background: none;
+  border: 1.5px solid #e5e7eb;
+  color: #374151;
+}
+
+.drive-confirm-cancel:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.drive-confirm-ok {
+  background: #dc2626;
+  border: 1.5px solid #dc2626;
+  color: #ffffff;
+}
+
+.drive-confirm-ok:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}

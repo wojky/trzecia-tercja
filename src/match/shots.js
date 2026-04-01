@@ -19,7 +19,8 @@ export function getFragmentOptions(selectedValue) {
   const count = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
   let options = '';
   for (let i = 1; i <= count; i++) {
-    options += `<option value="${i}" ${selectedValue == i ? 'selected' : ''}>${i}</option>`;
+    const label = state.fragmentNames[i - 1] || String(i);
+    options += `<option value="${i}" ${selectedValue == i ? 'selected' : ''}>${label}</option>`;
   }
   return options;
 }
@@ -29,11 +30,13 @@ export function getFragmentCustomSelect(index, selectedValue) {
   const count  = Math.max(1, parseInt(videoFragmentsCount.value) || 1);
   let liItems  = '';
   for (let i = 1; i <= count; i++) {
-    liItems += `<li class="custom-select-option frag-opt" data-value="${i}" data-index="${index}" role="option" aria-selected="${selVal == i ? 'true' : 'false'}">${i}</li>`;
+    const label = state.fragmentNames[i - 1] || String(i);
+    liItems += `<li class="custom-select-option frag-opt" data-value="${i}" data-index="${index}" role="option" aria-selected="${selVal == i ? 'true' : 'false'}">${label}</li>`;
   }
+  const selLabel = state.fragmentNames[selVal - 1] || String(selVal);
   return `<div class="custom-select-wrap shot-fragment-wrap">
       <select id="fragment-${index}" class="shot-fragment-select" data-index="${index}" data-field="videoFragment" style="display:none" aria-hidden="true">${getFragmentOptions(selectedValue)}</select>
-      <button type="button" class="custom-select-trigger shot-frag-trigger" data-index="${index}" aria-haspopup="listbox" aria-expanded="false"><span class="shot-frag-label">${selVal}</span><i class="bi bi-chevron-down custom-select-chevron"></i></button>
+      <button type="button" class="custom-select-trigger shot-frag-trigger" data-index="${index}" aria-haspopup="listbox" aria-expanded="false"><span class="shot-frag-label">${selLabel}</span><i class="bi bi-chevron-down custom-select-chevron"></i></button>
       <ul class="custom-select-dropdown shot-frag-dropdown" hidden role="listbox">${liItems}</ul>
     </div>`;
 }

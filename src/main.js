@@ -6,6 +6,10 @@ import './ui/controls.js';
 import './tabs/stats.js';
 import './tabs/players.js';
 import './tabs/docs.js';
+import { initAuth } from './drive/auth.js';
+import { initDrive } from './drive/drive.js';
 
 drawPitch();
 renderShotsList();
+initAuth();
+initDrive();

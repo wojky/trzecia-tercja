@@ -1,0 +1,36 @@
+/* ─────────────────────────────────────────────────────────
+   support.css — "Wesprzyj" dialog styles
+   ───────────────────────────────────────────────────────── */
+
+#supportDialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  width: min(400px, 96vw);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  background: #fff;
+}
+
+#supportDialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.coffee-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  background: #fff;
+  color: #111827;
+  text-decoration: none;
+  border: 1.5px solid #f3f4f6;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.coffee-tile:hover {
+  background: #fafafa;
+  border-color: #e11d48;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.12);
+}
