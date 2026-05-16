@@ -118,7 +118,6 @@
 /* ─── Per-shot kebab menu ───────────────────────────────── */
 .shot-item-menu-wrap {
   position: relative;
-  margin-left: auto;
 }
 
 .shot-item-menu-btn {
@@ -417,4 +416,131 @@
 #assistToast.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ─── Comment button (per-shot) ─────────────────────────── */
+.shot-comment-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 5px;
+  border-radius: 5px;
+  color: #9ca3af;
+  font-size: 15px;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.shot-comment-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.shot-comment-btn.has-comment {
+  color: #3b82f6;
+}
+
+.shot-comment-btn.has-comment:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* ─── Comment dialog ────────────────────────────────────── */
+.comment-dialog {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  width: min(480px, 90vw);
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.comment-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.comment-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.comment-dialog-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.comment-dialog-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.comment-dialog-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.comment-dialog-textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  color: #111827;
+  resize: vertical;
+  min-height: 110px;
+  outline: none;
+  font-family: inherit;
+  background: #ffffff;
+}
+
+.comment-dialog-textarea:focus {
+  background: #fafafa;
+}
+
+.comment-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 16px;
+}
+
+.comment-dialog-btn {
+  padding: 7px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.comment-dialog-btn:hover {
+  background: #f3f4f6;
+}
+
+.comment-dialog-btn.primary {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.comment-dialog-btn.primary:hover {
+  background: #1f2937;
+  border-color: #1f2937;
 }

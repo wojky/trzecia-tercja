@@ -175,7 +175,7 @@ export const xgModels = {
       const pitchX   = cx + 13.84;
       const pitchY   = cy;
       const centreX  = 34;
-      const channelX = 22.5 * 68 / 380;
+      const channelX = 22.5;          // metry od osi boiska (nie piksele)
       const relX     = Math.abs(centreX - pitchX);
 
       let relAngle;
@@ -292,9 +292,8 @@ export const xgModels = {
 // ─── Active model key (persisted in localStorage) ────────────────────────────
 
 export const xgState = {
-  key: localStorage.getItem('xgModel') || 'logistic',
+  key: 'caleyV1',
 };
-if (!xgModels[xgState.key]) xgState.key = 'logistic';
 
 // ─── Compute xG via active model ─────────────────────────────────────────────
 

@@ -26,16 +26,20 @@ navMecz.addEventListener('click', e => {
 function _showDocs() {
   contentInner.style.display = 'none';
   docsPanel.style.display    = 'flex';
+  document.getElementById('dataCenterPanel').style.display = 'none';
   navDocs.classList.add('active');
   navMecz.classList.remove('active');
+  document.getElementById('navDataCenter')?.classList.remove('active');
   if (!_loaded) _loadDocs();
 }
 
 function _showMecz() {
   contentInner.style.display = '';
   docsPanel.style.display    = 'none';
+  document.getElementById('dataCenterPanel').style.display = 'none';
   navMecz.classList.add('active');
   navDocs.classList.remove('active');
+  document.getElementById('navDataCenter')?.classList.remove('active');
   _tocObserver?.disconnect();
 }
 

@@ -89,3 +89,19 @@
   background: #ffffff;
   color: #111827;
 }
+
+.filter-field-inline {
+  min-width: unset;
+  justify-content: center;
+}
+
+.filter-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+  user-select: none;
+  padding: 9px 4px;
+}

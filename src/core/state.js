@@ -11,6 +11,7 @@ export const state = {
   hoveredShotIndex:  null,
   hoveredFromList:   false,
   activeTeamFilter:  'all',
+  goalsOnly:         false,
   isMirrored:        false,
   isReadMode:        false,
   assistModeIndex:   null,

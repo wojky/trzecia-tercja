@@ -73,6 +73,11 @@
             <i class="bi bi-book-half"></i>
             <span>Docs</span>
           </a>
+          <a href="#" class="sidebar-nav-item" id="navDataCenter">
+            <i class="bi bi-database"></i>
+            <span>Centrum danych</span>
+            <span class="sidebar-badge">beta</span>
+          </a>
         </nav>
       </aside>
 
@@ -303,6 +308,15 @@
                         <option value="ourTeam">Nasz zespół</option>
                         <option value="opponent">Przeciwnik</option>
                       </select>
+                    </div>
+                    <div class="filter-field filter-field-inline">
+                      <label
+                        class="filter-checkbox-label"
+                        for="goalsOnlyFilter"
+                      >
+                        <input type="checkbox" id="goalsOnlyFilter" />
+                        Tylko gole
+                      </label>
                     </div>
                     <div id="assistModeBar">
                       <button
@@ -688,6 +702,8 @@
               <div class="docs-loading">Ładowanie dokumentacji…</div>
             </article>
           </div>
+          <!-- ─── Data center panel ──────────────── -->
+          <div id="dataCenterPanel" style="display: none"></div>
         </main>
         <!-- /page-content -->
       </div>
@@ -830,6 +846,42 @@
         </button>
       </div>
       <div class="player-dialog-body" id="pdgBody"></div>
+    </dialog>
+
+    <!-- ─── Comment dialog ──────────────────────────────────── -->
+    <dialog id="commentDialog" class="comment-dialog">
+      <div class="comment-dialog-header">
+        <span class="comment-dialog-title">Komentarz do uderzenia</span>
+        <button
+          class="comment-dialog-close"
+          id="commentDialogClose"
+          aria-label="Zamknij"
+        >
+          ×
+        </button>
+      </div>
+      <textarea
+        id="commentDialogTextarea"
+        class="comment-dialog-textarea"
+        rows="5"
+        placeholder="Wpisz komentarz…"
+      ></textarea>
+      <div class="comment-dialog-actions">
+        <button
+          type="button"
+          id="commentDialogCancel"
+          class="comment-dialog-btn"
+        >
+          Anuluj
+        </button>
+        <button
+          type="button"
+          id="commentDialogSave"
+          class="comment-dialog-btn primary"
+        >
+          Zapisz
+        </button>
+      </div>
     </dialog>
   </body>
 </html>

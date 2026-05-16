@@ -244,3 +244,9 @@
   border: 1.5px solid;
   flex-shrink: 0;
 }
+
+.legend-star {
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}

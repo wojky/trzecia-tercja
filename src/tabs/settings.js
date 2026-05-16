@@ -13,7 +13,7 @@ export function renderSettings() {
       <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
         <label for="xgModelSelect" style="font-size:13px;color:#4b5563">Aktywny algorytm</label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="xgModelSelect" style="border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff;color:#111827;max-width:400px">
+          <select id="xgModelSelect" disabled style="border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#f3f4f6;color:#6b7280;max-width:400px;cursor:not-allowed">
             ${Object.values(xgModels).map(m => `
               <option value="${m.key}"${m.key === xgState.key ? ' selected' : ''}>${m.name}</option>
             `).join('')}
@@ -30,19 +30,11 @@ export function renderSettings() {
       </div>
 
       <div style="margin-top:16px;padding:12px 14px;background:#fef9c3;border:1px solid #fde68a;border-radius:10px;font-size:13px;color:#92400e">
-        <strong>Uwaga:</strong> zmiana modelu wpływa tylko na nowo dodawane uderzenia.<br>
-        Uderzenia już zapisane zachowują dotychczasowe wartości xG (można je ręcznie edytować).
+        <strong>Tymczasowo:</strong> wybór modelu jest zablokowany — aktywny jest Caley v1.<br>
+        Przy imporcie CSV xG jest automatycznie przeliczane według tego modelu.
       </div>
     </div>
   `;
-
-  document.getElementById('xgModelSelect').addEventListener('change', e => {
-    const key = e.target.value;
-    if (!xgModels[key]) return;
-    xgState.key = key;
-    localStorage.setItem('xgModel', key);
-    renderSettings();
-  });
 
   document.getElementById('recalcXgBtn').addEventListener('click', () => {
     const confirmed = window.confirm(

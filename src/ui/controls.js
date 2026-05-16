@@ -186,6 +186,14 @@ canvas.addEventListener('mouseleave', () => {
 // ─── Shot list events ─────────────────────────────────────────────────────────
 
 shotList.addEventListener('click', (event) => {
+  // Comment button
+  const commentBtn = event.target.closest('.shot-comment-btn');
+  if (commentBtn) {
+    const index = Number(commentBtn.dataset.index);
+    openCommentDialog(index);
+    return;
+  }
+
   // Fragment custom select – trigger
   const fragTrigger = event.target.closest('.shot-frag-trigger');
   if (fragTrigger) {
@@ -420,6 +428,13 @@ teamFilter.addEventListener('change', (event) => {
   renderShotsList();
 });
 
+document.getElementById('goalsOnlyFilter').addEventListener('change', (event) => {
+  state.goalsOnly = event.target.checked;
+  state.hoveredShotIndex = null;
+  drawPitch();
+  renderShotsList();
+});
+
 // ─── Assist mode buttons ──────────────────────────────────────────────────────
 
 document.getElementById('assistModeCancelBtn').addEventListener('click', cancelAssistMode);
@@ -456,4 +471,40 @@ importFileInput.addEventListener('change', (event) => {
   const reader = new FileReader();
   reader.onload  = (e) => importFromCsv(e.target.result);
   reader.readAsText(file, 'UTF-8');
+});
+
+// ─── Comment dialog ───────────────────────────────────────────────────────────
+
+const commentDialog       = document.getElementById('commentDialog');
+const commentDialogSave   = document.getElementById('commentDialogSave');
+const commentDialogCancel = document.getElementById('commentDialogCancel');
+const commentDialogClose  = document.getElementById('commentDialogClose');
+
+function openCommentDialog(index) {
+  const textarea = document.getElementById('commentDialogTextarea');
+  textarea.value = shots[index]?.comment || '';
+  commentDialog.dataset.shotIndex = index;
+  commentDialog.showModal();
+  textarea.focus();
+}
+
+commentDialogSave.addEventListener('click', () => {
+  const index    = Number(commentDialog.dataset.shotIndex);
+  const textarea = document.getElementById('commentDialogTextarea');
+  if (shots[index] !== undefined) {
+    shots[index].comment = textarea.value;
+    const btn = document.querySelector(`.shot-comment-btn[data-index="${index}"]`);
+    if (btn) {
+      btn.classList.toggle('has-comment', !!textarea.value);
+      btn.title = textarea.value ? 'Edytuj komentarz' : 'Dodaj komentarz';
+      btn.querySelector('i').className = textarea.value ? 'bi bi-chat-text-fill' : 'bi bi-chat-text';
+    }
+  }
+  commentDialog.close();
+});
+
+commentDialogCancel.addEventListener('click', () => commentDialog.close());
+commentDialogClose.addEventListener('click',  () => commentDialog.close());
+commentDialog.addEventListener('click', (e) => {
+  if (e.target === commentDialog) commentDialog.close();
 });

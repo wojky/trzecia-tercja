@@ -9,8 +9,9 @@ const videoFragmentsCount = document.getElementById('videoFragmentsCount');
 // ─── Filtering ────────────────────────────────────────────────────────────────
 
 export function getVisibleShots() {
-  if (state.activeTeamFilter === 'all') return shots;
-  return shots.filter(s => s.team === state.activeTeamFilter);
+  let list = state.activeTeamFilter === 'all' ? shots : shots.filter(s => s.team === state.activeTeamFilter);
+  if (state.goalsOnly) list = list.filter(s => s.status.includes('gol'));
+  return list;
 }
 
 // ─── Fragment custom select helpers ──────────────────────────────────────────
@@ -60,6 +61,7 @@ export function renderShotsList() {
         <div class="shot-header-row">
           <strong>Uderzenie ${index + 1}</strong>
           <span class="shot-coords">x: ${shot.contextX} y: ${shot.contextY}</span>
+          <button type="button" class="shot-comment-btn${shot.comment ? ' has-comment' : ''}" data-index="${index}" title="${shot.comment ? 'Edytuj komentarz' : 'Dodaj komentarz'}"><i class="bi bi-chat-text${shot.comment ? '-fill' : ''}"></i></button>
           <div class="shot-item-menu-wrap">
             <button type="button" class="shot-item-menu-btn" data-index="${index}" title="Opcje"><i class="bi bi-three-dots-vertical"></i></button>
             <div class="shot-item-dropdown" hidden>
@@ -177,6 +179,7 @@ export function createShot(x, y, team = 'ourTeam') {
     videoFragment: last ? last.videoFragment : '',
     assistPos:    null,
     assistArrow:  null,
+    comment:      '',
     team,
   };
 }

@@ -85,6 +85,17 @@ function buildScatterData(list, category) {
     }));
 }
 
+function buildGoalData(list) {
+  return list
+    .filter(s => parseMinutes(s.matchTime) !== null && s.status.includes('gol'))
+    .map(s => ({
+      x:            parseFloat(parseMinutes(s.matchTime).toFixed(1)),
+      y:            parseFloat((parseFloat(s.xg) || 0).toFixed(3)),
+      playerNumber: s.playerNumber || '—',
+      statusStr:    s.status.length ? s.status.join(', ') : '—',
+    }));
+}
+
 function renderShotDistribution(teamShots, xAxisMax) {
   const halfOur = makeHalfFilledCircle(COLORS.ourTeam);
   const halfOpp = makeHalfFilledCircle(COLORS.opponent);
@@ -114,6 +125,8 @@ function renderShotDistribution(teamShots, xAxisMax) {
     { label: 'Przeciwnik — celne',  data: buildScatterData(teamShots.opponent, 'celne'),      backgroundColor: COLORS.opponent,  borderColor: COLORS.opponent,  pointRadius: 6, pointHoverRadius: 8, pointBorderWidth: 1.5 },
     { label: 'Przeciwnik — niecelne', data: buildScatterData(teamShots.opponent, 'niecelny'), backgroundColor: 'transparent',    borderColor: COLORS.opponent,  pointRadius: 6, pointHoverRadius: 8, pointBorderWidth: 2 },
     { label: 'Przeciwnik — zablokowane', data: buildScatterData(teamShots.opponent, 'zablokowany'), pointStyle: halfOpp,          pointRadius: 6, pointHoverRadius: 8 },
+    { label: 'Nasz — bramka',       data: buildGoalData(teamShots.ourTeam),     pointStyle: 'star', backgroundColor: COLORS.ourTeam,  borderColor: '#ffffff', pointRadius: 9, pointHoverRadius: 11, pointBorderWidth: 1.5, order: -1 },
+    { label: 'Przeciwnik — bramka', data: buildGoalData(teamShots.opponent),    pointStyle: 'star', backgroundColor: COLORS.opponent, borderColor: '#ffffff', pointRadius: 9, pointHoverRadius: 11, pointBorderWidth: 1.5, order: -1 },
   ];
 
   const canvas = document.getElementById('shotDistributionChart');
@@ -148,6 +161,7 @@ function renderShotDistribution(teamShots, xAxisMax) {
       { label: 'Celny',       html: `<span class="legend-dot" style="background:currentColor"></span>` },
       { label: 'Niecelny',    html: `<span class="legend-dot-empty" style="border-color:currentColor"></span>` },
       { label: 'Zablokowany', html: `<span class="legend-dot-half" style="border-color:currentColor; background:linear-gradient(to right, currentColor 50%, transparent 50%)"></span>` },
+      { label: 'Bramka',      html: `<span class="legend-star" style="color:currentColor">★</span>` },
     ];
     const teams = [
       { label: 'Nasz zespół', color: COLORS.ourTeam },
@@ -203,15 +217,22 @@ export function renderStats() {
     return counts;
   }
 
-  function renderStatusGrid(id, counts) {
+  function renderStatusGrid(id, counts, otherCounts) {
     document.getElementById(id).innerHTML = Object.entries(STATUS_LABELS)
-      .map(([key, label]) =>
-        `<div class="stats-status-row"><span>${label}</span><strong>${counts[key] ?? 0}</strong></div>`
-      ).join('');
+      .map(([key, label]) => {
+        const val   = counts[key] ?? 0;
+        const other = otherCounts[key] ?? 0;
+        let bg = '';
+        if (val > other)       bg = ' style="background:#dcfce7;border-radius:5px;padding:1px 5px"';
+        else if (val < other)  bg = ' style="background:#fee2e2;border-radius:5px;padding:1px 5px"';
+        return `<div class="stats-status-row"><span>${label}</span><strong${bg}>${val}</strong></div>`;
+      }).join('');
   }
 
-  renderStatusGrid('s-status-grid-our', buildStatusCounts(teamShots.ourTeam));
-  renderStatusGrid('s-status-grid-opp', buildStatusCounts(teamShots.opponent));
+  const ourCounts = buildStatusCounts(teamShots.ourTeam);
+  const oppCounts = buildStatusCounts(teamShots.opponent);
+  renderStatusGrid('s-status-grid-our', ourCounts, oppCounts);
+  renderStatusGrid('s-status-grid-opp', oppCounts, ourCounts);
 
   const ourPoints = buildTimeline(teamShots.ourTeam);
   const oppPoints = buildTimeline(teamShots.opponent);

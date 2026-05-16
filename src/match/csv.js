@@ -3,6 +3,7 @@ import { pitch } from '../core/config.js';
 import { renderShotsList } from './shots.js';
 import { drawPitch } from './pitch.js';
 import { validateStart, syncVenueDisplay } from '../ui/setup.js';
+import { xgModels } from '../core/xg.js';
 
 // ─── CSV export ───────────────────────────────────────────────────────────────
 
@@ -64,6 +65,7 @@ export function buildCsvData() {
     'assistArrowX1', 'assistArrowY1', 'assistArrowX2', 'assistArrowY2',
     'assistArrowLength',
     'fragmentNames', 'fragmentOffsets',
+    'comment',
   ];
 
   const esc = (value) => {
@@ -106,6 +108,7 @@ export function buildCsvData() {
       })() : '',
       index === 0 ? JSON.stringify(state.fragmentNames)   : '',
       index === 0 ? JSON.stringify(state.fragmentOffsets) : '',
+      shot.comment || '',
     ];
     lines.push(row.map(esc).join(','));
   });
@@ -188,6 +191,7 @@ export function importFromCsv(text) {
             x2: parseFloat(row.assistArrowX2), y2: parseFloat(row.assistArrowY2) }
         : null,
       team: row.team === 'opponent' ? 'opponent' : 'ourTeam',
+      comment: row.comment || '',
     });
   }
 
@@ -224,6 +228,13 @@ export function importFromCsv(text) {
 
   shots.length = 0;
   imported.forEach(s => shots.push(s));
+
+  // Przelicz xG według aktywnego modelu (Caley v1)
+  const model = xgModels['caleyV1'];
+  shots.forEach(shot => {
+    shot.xg = model.compute(shot.contextX, shot.contextY, shot.status).toFixed(2);
+  });
+
   state.hoveredShotIndex = null;
   drawPitch();
   renderShotsList();
