@@ -22,4 +22,6 @@ export const state = {
   _arrowPreviewEnd:  null,    // { displayX, displayY }
   fragmentNames:     [],      // string[] — custom label for each video fragment
   fragmentOffsets:   [],      // number[] — offset in seconds for each video fragment
+  fragmentVideoIds:  [],      // string[] — Google Drive file ID for each fragment video
+  fragmentVideoNames:[],      // string[] — display name for each fragment video
 };

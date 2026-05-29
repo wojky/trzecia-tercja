@@ -419,6 +419,31 @@
 }
 
 /* ─── Comment button (per-shot) ─────────────────────────── */
+/* ─── Shot video play button ───────────────────────────── */
+.shot-video-play-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: #4f46e5;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+}
+
+.shot-video-play-btn:hover {
+  color: #3730a3;
+  background: #eef2ff;
+  opacity: 1;
+}
+
 .shot-comment-btn {
   background: transparent;
   border: none;

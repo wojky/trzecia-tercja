@@ -51,7 +51,36 @@ export async function pickFileToLoad() {
   });
 }
 
-// ─── Open picker to SELECT a FOLDER (Save to Drive) ─────────────────────────
+// ─── Open picker to SELECT a VIDEO file (from Drive) ─────────────────────────
+
+/**
+ * Returns a Promise that resolves with { fileId, fileName } when user picks
+ * a video file, or resolves with null if user cancels.
+ */
+export async function pickVideoFile() {
+  await initPicker();
+  const token = await requestAccessToken('');
+
+  return new Promise((resolve) => {
+    const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
+      .setMimeTypes('video/mp4,video/webm,video/ogg,video/mpeg,video/quicktime,video/x-msvideo,video/avi,video/*')
+      .setMode(window.google.picker.DocsViewMode.LIST)
+      .setIncludeFolders(false);
+
+    const picker = new window.google.picker.PickerBuilder()
+      .setAppId(GOOGLE_CLIENT_ID.split('-')[0])
+      .setOAuthToken(token)
+      .setDeveloperKey(GOOGLE_API_KEY)
+      .setTitle('Wybierz plik wideo z Drive')
+      .addView(view)
+      .setCallback((data) => _handlePickerCallback(data, resolve, 'file'))
+      .build();
+
+    picker.setVisible(true);
+  });
+}
+
+
 
 /**
  * Returns a Promise that resolves with { folderId, folderName } when user

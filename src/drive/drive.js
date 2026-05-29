@@ -79,6 +79,28 @@ export async function loadFromDrive() {
   }
 }
 
+// ─── Load video from Drive (returns a blob Object URL) ───────────────────────
+
+/**
+ * Downloads a video file from Drive by fileId and returns a blob Object URL
+ * that can be set as the `src` of a <video> element.
+ * Caller is responsible for revoking the returned URL via URL.revokeObjectURL().
+ */
+export async function loadVideoFromDrive(fileId) {
+  _showLoader('Pobieranie wideo z Drive…');
+  try {
+    const token = await requestAccessToken('');
+    const res = await fetch(`${DRIVE_FILES_URL}/${fileId}?alt=media`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  } finally {
+    _hideLoader();
+  }
+}
+
 // ─── Drive API helpers ────────────────────────────────────────────────────────
 
 async function _uploadFile(token, filename, csvText, folderId) {

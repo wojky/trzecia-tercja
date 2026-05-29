@@ -539,3 +539,519 @@
   background: #e2e8f0;
   opacity: 1;
 }
+
+/* ─── VFD — video column ────────────────────────────────── */
+
+/* Widen dialog when video column is shown */
+#videoFragmentsDialog.vfd-with-video {
+  width: min(780px, 96vw);
+}
+
+.vfd-col-video {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.vfd-video-cell {
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vfd-video-name {
+  flex: 1;
+  font-size: 12px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.vfd-video-pick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #4f46e5;
+  background: #eef2ff;
+  border: 1.5px solid #c7d2fe;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.vfd-video-pick-btn:hover {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+  opacity: 1;
+}
+
+.vfd-video-pick-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.vfd-video-play-btn,
+.vfd-video-clear-btn {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1.5px solid #e5e7eb;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.vfd-video-play-btn {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #16a34a;
+}
+
+.vfd-video-play-btn:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  opacity: 1;
+}
+
+.vfd-video-clear-btn {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #e11d48;
+}
+
+.vfd-video-clear-btn:hover {
+  background: #ffe4e6;
+  border-color: #fda4af;
+  opacity: 1;
+}
+
+/* ─── Video player dialog ───────────────────────────────── */
+
+.video-player-dialog {
+  border: none;
+  border-radius: 14px;
+  padding: 0;
+  width: min(1320px, 78vw);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28);
+  background: #0f172a;
+  overflow: hidden;
+}
+
+.video-player-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.vpd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.vpd-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.vpd-title .bi {
+  color: #818cf8;
+  font-size: 15px;
+}
+
+.vpd-header .player-dialog-close {
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.vpd-header .player-dialog-close:hover {
+  color: #f1f5f9;
+  opacity: 1;
+}
+
+/* ─── Body: side-by-side layout ─────────────────────────── */
+
+.vpd-body {
+  display: flex;
+  align-items: stretch;
+  min-height: 120px;
+}
+
+/* Video — 2/3 width */
+.vpd-video-wrap {
+  flex: 2;
+  min-width: 0;
+  padding: 12px;
+  position: relative;
+}
+
+.vpd-video-wrap video {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  background: #000;
+  max-height: 70vh;
+}
+
+/* Loading spinner on video wrap */
+.vpd-video-wrap.vpd-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 8px;
+}
+
+.vpd-video-wrap.vpd-loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(129, 140, 248, 0.25);
+  border-top-color: #818cf8;
+  border-radius: 50%;
+  animation: vpd-spin 0.7s linear infinite;
+}
+
+@keyframes vpd-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.vpd-error {
+  text-align: center;
+  color: #fca5a5;
+  font-size: 13px;
+  padding: 32px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Info panel — 1/3 width */
+.vpd-info {
+  flex: 1;
+  min-width: 210px;
+  max-width: 380px;
+  background: #1e293b;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom-right-radius: 14px;
+  padding: 14px 14px 18px;
+  overflow-y: auto;
+  max-height: calc(70vh + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-player-dialog.vpd-no-info .vpd-info {
+  display: none;
+}
+
+/* ─── Info — shot badge ─────────────────────────────────── */
+
+.vpd-shot-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vpd-shot-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.vpd-team-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+
+.vpd-team-pill.our {
+  background: rgba(225, 29, 72, 0.18);
+  color: #fb7185;
+}
+
+.vpd-team-pill.opp {
+  background: rgba(37, 99, 235, 0.18);
+  color: #60a5fa;
+}
+
+/* ─── Info — scoreboard ─────────────────────────────────── */
+
+.vpd-scoreboard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px 12px 10px;
+}
+
+.vpd-score-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.vpd-score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.vpd-score-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+}
+
+.vpd-score-val {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.vpd-score-val.our { color: #fb7185; }
+.vpd-score-val.opp { color: #60a5fa; }
+
+.vpd-score-sep {
+  font-size: 26px;
+  font-weight: 300;
+  color: #334155;
+  margin-top: 14px;
+}
+
+/* xG comparison bars */
+.vpd-xg-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vpd-xg-compare-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vpd-xg-compare-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: 26px;
+  flex-shrink: 0;
+}
+
+.vpd-xg-compare-label.our { color: #fb7185; }
+.vpd-xg-compare-label.opp { color: #60a5fa; }
+
+.vpd-xg-compare-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.vpd-xg-compare-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.vpd-xg-compare-fill.our { background: #fb7185; }
+.vpd-xg-compare-fill.opp { background: #60a5fa; }
+
+.vpd-xg-compare-val {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ─── Info — divider ────────────────────────────────────── */
+
+.vpd-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+/* ─── Info — details list ───────────────────────────────── */
+
+.vpd-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 7px 10px;
+  margin: 0;
+}
+
+.vpd-dl dt {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.vpd-dl dd {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* Timestamp cell with seek button */
+.vpd-ts-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vpd-ts-seek {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(129, 140, 248, 0.14);
+  border: 1px solid rgba(129, 140, 248, 0.28);
+  color: #818cf8;
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.15s, color 0.15s;
+}
+
+.vpd-ts-seek:hover {
+  background: rgba(129, 140, 248, 0.28);
+  color: #c7d2fe;
+}
+
+/* xG shot quality bar */
+.vpd-xg-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vpd-xg-shot-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.vpd-xg-shot-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.vpd-xg-shot-val {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ─── Info — status tags ────────────────────────────────── */
+
+.vpd-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.vpd-tag {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #94a3b8;
+}
+
+.vpd-tag-goal {
+  background: rgba(34, 197, 94, 0.18);
+  color: #4ade80;
+}
+
+/* ─── Info — comment ────────────────────────────────────── */
+
+.vpd-comment {
+  font-size: 11px;
+  color: #94a3b8;
+  font-style: italic;
+  border-left: 2px solid #334155;
+  padding: 4px 0 4px 10px;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .video-player-dialog {
+    width: 96vw;
+  }
+
+  .vpd-body {
+    flex-direction: column;
+  }
+
+  .vpd-info {
+    max-height: none;
+    max-width: none;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 14px;
+  }
+}

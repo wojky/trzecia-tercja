@@ -65,6 +65,7 @@ export function buildCsvData() {
     'assistArrowX1', 'assistArrowY1', 'assistArrowX2', 'assistArrowY2',
     'assistArrowLength',
     'fragmentNames', 'fragmentOffsets',
+    'fragmentVideoIds', 'fragmentVideoNames',
     'comment',
   ];
 
@@ -106,8 +107,10 @@ export function buildCsvData() {
         const dyM = (shot.assistArrow.y2 - shot.assistArrow.y1) / scaleY;
         return Math.sqrt(dxM * dxM + dyM * dyM).toFixed(2);
       })() : '',
-      index === 0 ? JSON.stringify(state.fragmentNames)   : '',
-      index === 0 ? JSON.stringify(state.fragmentOffsets) : '',
+      index === 0 ? JSON.stringify(state.fragmentNames)        : '',
+      index === 0 ? JSON.stringify(state.fragmentOffsets)       : '',
+      index === 0 ? JSON.stringify(state.fragmentVideoIds   ?? []) : '',
+      index === 0 ? JSON.stringify(state.fragmentVideoNames ?? []) : '',
       shot.comment || '',
     ];
     lines.push(row.map(esc).join(','));
@@ -216,8 +219,10 @@ export function importFromCsv(text) {
   if (firstRow.matchDate)           matchDateInput.value    = firstRow.matchDate;
   if (firstRow.venue)               { venueSelect.value = firstRow.venue; syncVenueDisplay(firstRow.venue); }
   if (firstRow.videoFragmentsCount) videoFragmentsCount.value = Math.max(1, parseInt(firstRow.videoFragmentsCount) || 1);
-  if (firstRow.fragmentNames)   { try { state.fragmentNames   = JSON.parse(firstRow.fragmentNames);   } catch {} }
-  if (firstRow.fragmentOffsets) { try { state.fragmentOffsets = JSON.parse(firstRow.fragmentOffsets); } catch {} }
+  if (firstRow.fragmentNames)      { try { state.fragmentNames      = JSON.parse(firstRow.fragmentNames);      } catch {} }
+  if (firstRow.fragmentOffsets)    { try { state.fragmentOffsets    = JSON.parse(firstRow.fragmentOffsets);    } catch {} }
+  if (firstRow.fragmentVideoIds)   { try { state.fragmentVideoIds   = JSON.parse(firstRow.fragmentVideoIds);   } catch {} }
+  if (firstRow.fragmentVideoNames) { try { state.fragmentVideoNames = JSON.parse(firstRow.fragmentVideoNames); } catch {} }
 
   validateStart();
   mainLayout.style.display = '';

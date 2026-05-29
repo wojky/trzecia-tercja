@@ -1,6 +1,7 @@
 import { state, shots } from '../core/state.js';
 import { pitch } from '../core/config.js';
 import { computeXg } from '../core/xg.js';
+import { parseTimeToSeconds } from '../core/time.js';
 
 const counter             = document.getElementById('counter');
 const shotList            = document.getElementById('shotList');
@@ -42,6 +43,60 @@ export function getFragmentCustomSelect(index, selectedValue) {
     </div>`;
 }
 
+// ─── Video seek helper ───────────────────────────────────────────────────────
+
+/**
+ * Returns { fileId, fileName, seekSec } for the shot's fragment if a Drive
+ * video is linked, or null if not.
+ * seekSec = video position 5 s before the shot.
+ */
+function _getShotVideoInfo(shot) {
+  const fragIdx  = (parseInt(shot.videoFragment) || 1) - 1;
+  const fileId   = state.fragmentVideoIds?.[fragIdx];
+  if (!fileId) return null;
+  const fileName = state.fragmentVideoNames?.[fragIdx] || 'Wideo';
+
+  let seekSec = 0;
+  const tsSec = parseTimeToSeconds(shot.timestamp);
+  if (tsSec !== null) {
+    // timestamp is the direct video position
+    seekSec = Math.max(0, tsSec - 5);
+  } else {
+    const mtSec  = parseTimeToSeconds(shot.matchTime);
+    const offset = state.fragmentOffsets[fragIdx];
+    if (mtSec !== null && offset !== null && offset !== undefined) {
+      seekSec = Math.max(0, mtSec - offset - 5);
+    }
+  }
+  return { fileId, fileName, seekSec };
+}
+
+function _esc(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ─── Shot video play — event delegation ──────────────────────────────────────
+
+let _shotListVideoListenerAdded = false;
+
+function _ensureShotVideoListener() {
+  if (_shotListVideoListenerAdded) return;
+  _shotListVideoListenerAdded = true;
+  shotList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.shot-video-play-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    document.dispatchEvent(new CustomEvent('shot:playvideo', {
+      detail: {
+        fileId:    btn.dataset.fileid,
+        fileName:  btn.dataset.filename || 'Wideo',
+        seekSec:   parseFloat(btn.dataset.seek) || 0,
+        shotIndex: parseInt(btn.dataset.shotindex),
+      },
+    }));
+  });
+}
+
 // ─── Shot list renderer ───────────────────────────────────────────────────────
 
 export function renderShotsList() {
@@ -53,13 +108,20 @@ export function renderShotsList() {
     return;
   }
 
+  _ensureShotVideoListener();
+
   shotList.innerHTML = [...visibleShots].reverse()
     .map((shot) => {
-      const index = shots.indexOf(shot);
+      const index    = shots.indexOf(shot);
+      const vidInfo  = _getShotVideoInfo(shot);
+      const videoBtn = vidInfo
+        ? `<button type="button" class="shot-video-play-btn" data-fileid="${_esc(vidInfo.fileId)}" data-filename="${_esc(vidInfo.fileName)}" data-seek="${vidInfo.seekSec}" data-shotindex="${index}" title="Odtwórz wideo fragmentu"><i class="bi bi-play-circle-fill"></i></button>`
+        : '';
       return `
       <div class="shot-item" data-index="${index}">
         <div class="shot-header-row">
           <strong>Uderzenie ${index + 1}</strong>
+          ${videoBtn}
           <span class="shot-coords">x: ${shot.contextX} y: ${shot.contextY}</span>
           <button type="button" class="shot-comment-btn${shot.comment ? ' has-comment' : ''}" data-index="${index}" title="${shot.comment ? 'Edytuj komentarz' : 'Dodaj komentarz'}"><i class="bi bi-chat-text${shot.comment ? '-fill' : ''}"></i></button>
           <div class="shot-item-menu-wrap">

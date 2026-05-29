@@ -883,5 +883,21 @@
         </button>
       </div>
     </dialog>
+    <!-- ─── Video player dialog ────────────────────────────── -->
+    <dialog id="videoPlayerDialog" class="video-player-dialog">
+      <div class="vpd-header">
+        <span class="vpd-title" id="vpdTitle">
+          <i class="bi bi-play-circle-fill"></i>
+          <span id="vpdTitleText">Wideo</span>
+        </span>
+        <button class="player-dialog-close" id="vpdClose" aria-label="Zamknij">&times;</button>
+      </div>
+      <div class="vpd-body">
+        <div class="vpd-video-wrap" id="vpdVideoWrap">
+          <video id="vpdVideo" controls preload="metadata"></video>
+        </div>
+        <div class="vpd-info" id="vpdInfo"></div>
+      </div>
+    </dialog>
   </body>
 </html>
